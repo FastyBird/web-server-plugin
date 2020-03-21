@@ -1,0 +1,80 @@
+{
+  "name" : "fastybird/node-web-server",
+  "type" : "library",
+  "description" : "FastyBird node web server with JSON:API support",
+  "keywords" : [
+    "fastybird",
+    "fb",
+    "libs",
+    "webserver",
+    "server",
+    "jsonapi",
+    "rabbit",
+    "library"
+  ],
+
+  "homepage" : "https://www.fastybird.com",
+
+  "license" : "Apache-2.0",
+
+  "authors" : [
+    {
+      "name" : "FastyBird s.r.o.",
+      "email" : "info@fastybird.com",
+      "homepage" : "https://www.fastybird.com/"
+    },
+    {
+      "name" : "Adam Kadlec",
+      "email" : "adam.kadlec@fastybird.com"
+    }
+  ],
+
+  "prefer-stable" : true,
+
+  "minimum-stability" : "dev",
+
+  "require" : {
+    "php" : ">=7.2.0",
+    "ext-json" : "*",
+    "fastybird/node-libs" : "^0.2.1",
+    "ipub/slim-router" : "^0.1.0",
+    "neomerx/json-api" : "^4.0",
+    "nette/bootstrap" : "^3.0",
+    "nette/di" : "^3.0",
+    "nette/utils" : "^3.0",
+    "react/http" : "^0.8.6"
+  },
+
+  "require-dev" : {
+    "mockery/mockery" : "^1.3",
+    "ninjify/nunjuck" : "^0.3.0",
+    "ninjify/qa" : "^0.10.0",
+    "pds/skeleton" : "~1.0",
+    "phpstan/extension-installer" : "^1.0",
+    "phpstan/phpstan" : "^0.12.11",
+    "phpstan/phpstan-deprecation-rules" : "^0.12.2",
+    "phpstan/phpstan-nette" : "^0.12.3",
+    "phpstan/phpstan-strict-rules" : "^0.12.2",
+    "tracy/tracy" : "~2.4"
+  },
+
+  "autoload" : {
+    "psr-4" : {
+      "FastyBird\\NodeWebServer\\" : "src/"
+    },
+    "files" : [
+      "src/Events/Symfony/Event.php"
+    ]
+  },
+
+  "autoload-dev" : {
+    "psr-4" : {
+      "Tests\\Cases\\" : "tests/cases",
+      "Tests\\Fixtures\\" : "tests/fixtures"
+    }
+  },
+
+  "config" : {
+    "sort-packages" : true
+  }
+}
