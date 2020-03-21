@@ -183,6 +183,7 @@ class JsonApiMiddleware implements MiddlewareInterface
 			}
 
 		} catch (Throwable $ex) {
+			var_dump($ex->getMessage());
 			$response = $this->responseFactory->createResponse();
 
 			if ($ex instanceof Exceptions\IJsonApiException) {

@@ -46,7 +46,11 @@ class NodeWebServerExtension extends DI\CompilerExtension
 	public function getConfigSchema(): Schema\Schema
 	{
 		return Schema\Expect::structure([
-			'meta' => Schema\Expect::structure([
+			'server' => Schema\Expect::structure([
+				'address' => Schema\Expect::string('127.0.0.1'),
+				'port'    => Schema\Expect::int(8000),
+			]),
+			'meta'   => Schema\Expect::structure([
 				'author'    => Schema\Expect::anyOf(Schema\Expect::string(), Schema\Expect::array())->default('FastyBird dev team'),
 				'copyright' => Schema\Expect::string()->default('FastyBird s.r.o'),
 			]),
@@ -76,7 +80,9 @@ class NodeWebServerExtension extends DI\CompilerExtension
 			->addTag(self::ROUTER_MIDDLEWARE_TAG, ['priority' => 100]);
 
 		$builder->addDefinition(null)
-			->setType(Commands\HttpServerCommand::class);
+			->setType(Commands\HttpServerCommand::class)
+			->setArgument('address', $configuration->server->address)
+			->setArgument('port', $configuration->server->port);
 
 		$builder->addDefinition(null)
 			->setType(JsonApi\JsonApiSchemaContainer::class);

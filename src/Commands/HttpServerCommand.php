@@ -81,13 +81,21 @@ class HttpServerCommand extends Console\Command\Command
 	/** @var EventLoop\LoopInterface */
 	private $eventLoop;
 
+	/** @var string */
+	private $address;
+
+	/** @var int */
+	private $port;
+
 	public function __construct(
 		NodeLibsConnections\IRabbitMqConnection $rabbitMqConnection,
 		NodeLibsHelpers\IInitialize $initialize,
 		NodeLibsConsumers\IExchangeConsumer $exchangeConsumer,
 		Log\LoggerInterface $logger,
 		EventLoop\LoopInterface $eventLoop,
-		?Routing\IRouter $router = null,
+		Routing\IRouter $router,
+		string $address = '127.0.0.1',
+		int $port = 8000,
 		?string $name = null
 	) {
 		parent::__construct($name);
@@ -96,10 +104,13 @@ class HttpServerCommand extends Console\Command\Command
 		$this->initialize = $initialize;
 		$this->exchangeConsumer = $exchangeConsumer;
 
-		$this->router = $router ?? new Routing\Router();
+		$this->router = $router;
 		$this->logger = $logger;
 
 		$this->eventLoop = $eventLoop;
+
+		$this->address = $address;
+		$this->port = $port;
 	}
 
 	/**
@@ -110,7 +121,7 @@ class HttpServerCommand extends Console\Command\Command
 		parent::configure();
 
 		$this
-			->setName('fb:devices-node:server')
+			->setName('fb:node:server:start')
 			->setDescription('Start http server.');
 	}
 
@@ -211,7 +222,7 @@ class HttpServerCommand extends Console\Command\Command
 				return $response;
 			});
 
-			$socket = new Socket\Server('127.0.0.1:8000', $this->eventLoop);
+			$socket = new Socket\Server($this->address . ':' . (string) $this->port, $this->eventLoop);
 			$server->listen($socket);
 
 			if ($socket->getAddress() !== null) {
@@ -221,6 +232,7 @@ class HttpServerCommand extends Console\Command\Command
 			$this->eventLoop->run();
 
 		} catch (Throwable $ex) {
+			var_dump($ex->getMessage());
 			if ($ex instanceof NodeLibsExceptions\TerminateException) {
 				// Log terminate action reason
 				$this->logger->warning('[TERMINATED] FB devices node - HTTP server', [
