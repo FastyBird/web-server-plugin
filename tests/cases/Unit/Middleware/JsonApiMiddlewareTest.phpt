@@ -2,15 +2,9 @@
 
 namespace Tests\Cases;
 
-use Bunny;
-use FastyBird\NodeLibs\Connections as NodeLibsConnections;
-use FastyBird\NodeLibs\Consumers as NodeLibsConsumers;
-use FastyBird\NodeLibs\Helpers as NodeLibsHelpers;
-use FastyBird\NodeWebServer\Commands;
 use FastyBird\NodeWebServer\Http;
 use FastyBird\NodeWebServer\JsonApi;
 use FastyBird\NodeWebServer\Middleware;
-use IPub\SlimRouter;
 use Mockery;
 use Neomerx;
 use Nette\DI;
@@ -20,10 +14,6 @@ use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log;
-use React\EventLoop;
-use React\Promise;
-use Symfony\Component\Console\Application;
-use Symfony\Component\Console\Tester\CommandTester;
 use Tester\Assert;
 
 require_once __DIR__ . '/../../../bootstrap.php';
@@ -31,7 +21,7 @@ require_once __DIR__ . '/../../../bootstrap.php';
 final class JsonApiMiddlewareTest extends BaseMockeryTestCase
 {
 
-	public function testProcess()
+	public function testProcess(): void
 	{
 		$responseFactory = new Http\ResponseFactory();
 
