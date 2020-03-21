@@ -73,10 +73,13 @@ class NodeWebServerExtension extends DI\CompilerExtension
 			->setType(Middleware\JsonApiMiddleware::class)
 			->setArgument('metaAuthor', $configuration->meta->author)
 			->setArgument('metaCopyright', $configuration->meta->copyright)
-			->addTag(self::ROUTER_MIDDLEWARE_TAG, ['priority' => 5]);
+			->addTag(self::ROUTER_MIDDLEWARE_TAG, ['priority' => 100]);
 
 		$builder->addDefinition(null)
 			->setType(Commands\HttpServerCommand::class);
+
+		$builder->addDefinition(null)
+			->setType(JsonApi\JsonApiSchemaContainer::class);
 	}
 
 	/**
@@ -106,14 +109,14 @@ class NodeWebServerExtension extends DI\CompilerExtension
 			return ($p1 < $p2) ? -1 : 1;
 		});
 
-		$routerServiceName = $builder->getByType(SlimRouter\Routing\IRouter::class);
+		$routerServiceName = $builder->getByType(SlimRouter\Routing\IRouter::class, true);
 
 		if ($routerServiceName !== null) {
 			$routerService = $builder->getDefinition($routerServiceName);
 			assert($routerService instanceof DI\Definitions\ServiceDefinition);
 
-			foreach ($middlewareServices as $middlewareService) {
-				$routerService->addSetup('addMiddleware', [$middlewareService]);
+			foreach ($middlewareServices as $middlewareService => $middlewareServiceTags) {
+				$routerService->addSetup('addMiddleware', [$builder->getDefinition($middlewareService)]);
 			}
 		}
 
@@ -121,7 +124,7 @@ class NodeWebServerExtension extends DI\CompilerExtension
 		 * JSON:API SCHEMAS
 		 */
 
-		$schemaContainerServiceName = $builder->getByType(JsonApi\JsonApiSchemaContainer::class);
+		$schemaContainerServiceName = $builder->getByType(JsonApi\JsonApiSchemaContainer::class, true);
 
 		if ($schemaContainerServiceName !== null) {
 			$schemaContainerService = $builder->getDefinition($schemaContainerServiceName);
@@ -139,12 +142,12 @@ class NodeWebServerExtension extends DI\CompilerExtension
 		 */
 
 		if (interface_exists('Symfony\Component\EventDispatcher\EventDispatcherInterface')) {
-			$dispatcherServiceName = $builder->getByType('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+			$dispatcherServiceName = $builder->getByType('Symfony\Component\EventDispatcher\EventDispatcherInterface', true);
 
 			if ($dispatcherServiceName !== null) {
 				$dispatcherService = $builder->getDefinition($dispatcherServiceName);
 
-				$serverCommandServiceName = $builder->getByType(Commands\HttpServerCommand::class);
+				$serverCommandServiceName = $builder->getByType(Commands\HttpServerCommand::class, true);
 
 				if ($serverCommandServiceName !== null) {
 					$serverCommandService = $builder->getDefinition($serverCommandServiceName);
