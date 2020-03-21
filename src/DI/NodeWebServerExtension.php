@@ -95,6 +95,12 @@ class NodeWebServerExtension extends DI\CompilerExtension
 		 * ROUTER MIDDLEWARE
 		 */
 
+		if ($builder->getByType(SlimRouter\Routing\IRouter::class) === null) {
+			$builder->addDefinition(null)
+				->setType(SlimRouter\Routing\Router::class)
+				->setAutowired(false);
+		}
+
 		$middlewareServices = $builder->findByTag(self::ROUTER_MIDDLEWARE_TAG);
 
 		// Sort by priority
