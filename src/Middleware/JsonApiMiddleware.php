@@ -183,11 +183,10 @@ class JsonApiMiddleware implements MiddlewareInterface
 			}
 
 		} catch (Throwable $ex) {
-			var_dump($ex->getMessage());
 			$response = $this->responseFactory->createResponse();
 
 			if ($ex instanceof Exceptions\IJsonApiException) {
-				$response->withStatus($ex->getCode());
+				$response = $response->withStatus($ex->getCode());
 
 				if ($ex instanceof Exceptions\JsonApiErrorException) {
 					$content = $this->getEncoder()->encodeError($ex->getError());
@@ -201,7 +200,7 @@ class JsonApiMiddleware implements MiddlewareInterface
 				}
 
 			} elseif ($ex instanceof SlimRouter\Exceptions\HttpException) {
-				$response = $response->withStatus($ex->getCode());
+				$response = $response = $response->withStatus($ex->getCode());
 
 				$content = $this->getEncoder()->encodeError(new Schema\Error(
 					null,

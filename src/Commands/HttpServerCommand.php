@@ -232,7 +232,6 @@ class HttpServerCommand extends Console\Command\Command
 			$this->eventLoop->run();
 
 		} catch (Throwable $ex) {
-			var_dump($ex->getMessage());
 			if ($ex instanceof NodeLibsExceptions\TerminateException) {
 				// Log terminate action reason
 				$this->logger->warning('[TERMINATED] FB devices node - HTTP server', [
