@@ -200,7 +200,7 @@ class JsonApiMiddleware implements MiddlewareInterface
 				}
 
 			} elseif ($ex instanceof SlimRouter\Exceptions\HttpException) {
-				$response = $response = $response->withStatus($ex->getCode());
+				$response = $response->withStatus($ex->getCode());
 
 				$content = $this->getEncoder()->encodeError(new Schema\Error(
 					null,
