@@ -17,10 +17,11 @@ namespace FastyBird\NodeWebServer\Middleware;
 
 use FastyBird\NodeWebServer\Exceptions;
 use FastyBird\NodeWebServer\Http;
+use FastyBird\NodeWebServer\JsonApi;
 use Fig\Http\Message\RequestMethodInterface;
 use Fig\Http\Message\StatusCodeInterface;
 use IPub\SlimRouter;
-use Neomerx\JsonApi;
+use Neomerx;
 use Neomerx\JsonApi\Contracts;
 use Neomerx\JsonApi\Schema;
 use Nette\DI;
@@ -162,11 +163,25 @@ class JsonApiMiddleware implements MiddlewareInterface
 					$encoder->withLinks($links);
 
 					if (Utils\Strings::contains($request->getUri()->getPath(), '/relationships/')) {
-						$uriRelated = $request->getUri();
+						$encodedData = $encoder->encodeDataAsArray($entity->getData());
 
-						$encoder->withLinks(array_merge($links, [
-							self::LINK_RELATED => new Schema\Link(false, str_replace('/relationships/', '/', $this->uriToString($uriRelated)), false),
-						]));
+						// Try to get "self" link from encoded entity as array
+						if (
+							isset($encodedData['data'])
+							&& isset($encodedData['data']['links'])
+							&& isset($encodedData['data']['links'][self::LINK_SELF])
+						) {
+							$encoder->withLinks(array_merge($links, [
+								self::LINK_RELATED => new Schema\Link(false, $encodedData['data']['links'][self::LINK_SELF], false),
+							]));
+
+						} else {
+							$uriRelated = $request->getUri();
+
+							$encoder->withLinks(array_merge($links, [
+								self::LINK_RELATED => new Schema\Link(false, str_replace('/relationships/', '/', $this->uriToString($uriRelated)), false),
+							]));
+						}
 
 						$content = $encoder->encodeIdentifiers($entity->getData());
 
@@ -258,12 +273,12 @@ class JsonApiMiddleware implements MiddlewareInterface
 	}
 
 	/**
-	 * @return JsonApi\Encoder\Encoder
+	 * @return JsonApi\JsonApiEncoder
 	 */
-	private function getEncoder(): JsonApi\Encoder\Encoder
+	private function getEncoder(): JsonApi\JsonApiEncoder
 	{
-		$encoder = new JsonApi\Encoder\Encoder(
-			new JsonApi\Factories\Factory(),
+		$encoder = new JsonApi\JsonApiEncoder(
+			new Neomerx\JsonApi\Factories\Factory(),
 			$this->container->getByType(Contracts\Schema\SchemaContainerInterface::class)
 		);
 
