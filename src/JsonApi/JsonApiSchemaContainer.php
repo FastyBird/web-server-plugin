@@ -49,17 +49,21 @@ class JsonApiSchemaContainer extends JsonApi\Schema\SchemaContainer
 	/**
 	 * {@inheritDoc}
 	 */
-	protected function getResourceType($resource) : string
+	protected function getResourceType($resource): string
 	{
-		$class = get_class($resource);
+		if (class_exists('Doctrine\Common\Persistence\Proxy')) {
+			$class = get_class($resource);
 
-		$pos = strrpos($class, '\\' . Common\Persistence\Proxy::MARKER . '\\');
+			$pos = strrpos($class, '\\' . Common\Persistence\Proxy::MARKER . '\\');
 
-		if ($pos === FALSE) {
-			return $class;
+			if ($pos === false) {
+				return $class;
+			}
+
+			return substr($class, $pos + Common\Persistence\Proxy::MARKER_LENGTH + 2);
 		}
 
-		return substr($class, $pos + Common\Persistence\Proxy::MARKER_LENGTH + 2);
+		return parent::getResourceType($resource);
 	}
 
 }
