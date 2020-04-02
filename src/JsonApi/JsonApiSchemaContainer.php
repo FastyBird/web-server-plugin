@@ -53,7 +53,7 @@ class JsonApiSchemaContainer extends JsonApi\Schema\SchemaContainer
 	 */
 	protected function getResourceType($resource): string
 	{
-		if (class_exists('\Doctrine\Common\Persistence\Proxy')) {
+		if (interface_exists('\Doctrine\Common\Persistence\Proxy')) {
 			$class = get_class($resource);
 
 			$pos = strrpos($class, '\\' . self::DOCTRINE_MARKER . '\\');
