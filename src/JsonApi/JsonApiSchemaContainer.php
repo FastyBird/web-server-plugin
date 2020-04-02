@@ -15,7 +15,6 @@
 
 namespace FastyBird\NodeWebServer\JsonApi;
 
-use Doctrine\Common;
 use Neomerx\JsonApi;
 
 /**
@@ -28,6 +27,9 @@ use Neomerx\JsonApi;
  */
 class JsonApiSchemaContainer extends JsonApi\Schema\SchemaContainer
 {
+
+	private const DOCTRINE_MARKER = '__CG__';
+	private const DOCTRINE_MARKER_LENGTH = 6;
 
 	public function __construct()
 	{
@@ -51,16 +53,16 @@ class JsonApiSchemaContainer extends JsonApi\Schema\SchemaContainer
 	 */
 	protected function getResourceType($resource): string
 	{
-		if (class_exists('Doctrine\Common\Persistence\Proxy')) {
+		if (class_exists('\Doctrine\Common\Persistence\Proxy')) {
 			$class = get_class($resource);
 
-			$pos = strrpos($class, '\\' . Common\Persistence\Proxy::MARKER . '\\');
+			$pos = strrpos($class, '\\' . self::DOCTRINE_MARKER . '\\');
 
 			if ($pos === false) {
 				return $class;
 			}
 
-			return substr($class, $pos + Common\Persistence\Proxy::MARKER_LENGTH + 2);
+			return substr($class, $pos + self::DOCTRINE_MARKER_LENGTH + 2);
 		}
 
 		return parent::getResourceType($resource);
