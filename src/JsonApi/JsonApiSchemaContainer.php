@@ -15,6 +15,7 @@
 
 namespace FastyBird\NodeWebServer\JsonApi;
 
+use Doctrine\Common;
 use Neomerx\JsonApi;
 
 /**
@@ -43,6 +44,22 @@ class JsonApiSchemaContainer extends JsonApi\Schema\SchemaContainer
 		$this->setProviderMapping($schema->getEntityClass(), get_class($schema));
 		$this->setResourceToJsonTypeMapping($schema->getType(), $schema->getEntityClass());
 		$this->setCreatedProvider($schema->getEntityClass(), $schema);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	protected function getResourceType($resource) : string
+	{
+		$class = get_class($resource);
+
+		$pos = strrpos($class, '\\' . Common\Persistence\Proxy::MARKER . '\\');
+
+		if ($pos === FALSE) {
+			return $class;
+		}
+
+		return substr($class, $pos + Common\Persistence\Proxy::MARKER_LENGTH + 2);
 	}
 
 }
