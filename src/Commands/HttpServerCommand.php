@@ -144,6 +144,8 @@ class HttpServerCommand extends Console\Command\Command
 				return $client->channel();
 			})
 			->then(function (Bunny\Channel $channel): Promise\PromiseInterface {
+				$this->rabbitMqConnection->setChannel($channel);
+
 				$qosResult = $channel->qos(0, 5);
 
 				if ($qosResult instanceof Promise\PromiseInterface) {
