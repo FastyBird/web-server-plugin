@@ -197,6 +197,10 @@ class JsonApiMiddleware implements MiddlewareInterface
 				}
 			}
 
+		} catch (NodeLibsExceptions\TerminateException $ex) {
+			// Terminate exception is skipped, server will be shut down
+			throw $ex;
+
 		} catch (Throwable $ex) {
 			$response = $this->responseFactory->createResponse();
 
