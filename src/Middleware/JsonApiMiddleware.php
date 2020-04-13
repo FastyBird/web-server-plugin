@@ -15,6 +15,7 @@
 
 namespace FastyBird\NodeWebServer\Middleware;
 
+use FastyBird\NodeLibs\Exceptions as NodeLibsExceptions;
 use FastyBird\NodeWebServer\Exceptions;
 use FastyBird\NodeWebServer\Http;
 use FastyBird\NodeWebServer\JsonApi;
