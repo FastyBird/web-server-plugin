@@ -16,7 +16,6 @@
 namespace FastyBird\NodeWebServer\DI;
 
 use FastyBird\NodeWebServer\Commands;
-use FastyBird\NodeWebServer\Events;
 use FastyBird\NodeWebServer\Http;
 use FastyBird\NodeWebServer\JsonApi;
 use FastyBird\NodeWebServer\Middleware;
@@ -145,43 +144,6 @@ class NodeWebServerExtension extends DI\CompilerExtension
 
 			foreach ($schemasServices as $schemasService) {
 				$schemaContainerService->addSetup('add', [$schemasService]);
-			}
-		}
-
-		/**
-		 * EXTENSION EVENTS
-		 */
-
-		if (interface_exists('Symfony\Component\EventDispatcher\EventDispatcherInterface')) {
-			$dispatcherServiceName = $builder->getByType('Symfony\Component\EventDispatcher\EventDispatcherInterface', true);
-
-			if ($dispatcherServiceName !== null) {
-				$dispatcherService = $builder->getDefinition($dispatcherServiceName);
-
-				$serverCommandServiceName = $builder->getByType(Commands\HttpServerCommand::class, true);
-
-				if ($serverCommandServiceName !== null) {
-					$serverCommandService = $builder->getDefinition($serverCommandServiceName);
-					assert($serverCommandService instanceof DI\Definitions\ServiceDefinition);
-
-					$serverCommandService->addSetup('?->onRequest[] = function() {?->dispatch(new ?(...func_get_args()));}', [
-						'@self',
-						$dispatcherService,
-						new Nette\PhpGenerator\PhpLiteral(Events\RequestEvent::class),
-					]);
-
-					$serverCommandService->addSetup('?->onResponse[] = function() {?->dispatch(new ?(...func_get_args()));}', [
-						'@self',
-						$dispatcherService,
-						new Nette\PhpGenerator\PhpLiteral(Events\ResponseEvent::class),
-					]);
-
-					$serverCommandService->addSetup('?->onConsumerMessage[] = function() {?->dispatch(new ?(...func_get_args()));}', [
-						'@self',
-						$dispatcherService,
-						new Nette\PhpGenerator\PhpLiteral(Events\ConsumerMessageEvent::class),
-					]);
-				}
 			}
 		}
 	}

@@ -22,6 +22,7 @@ use FastyBird\NodeLibs\Connections as NodeLibsConnections;
 use FastyBird\NodeLibs\Consumers as NodeLibsConsumers;
 use FastyBird\NodeLibs\Exceptions as NodeLibsExceptions;
 use FastyBird\NodeLibs\Helpers as NodeLibsHelpers;
+use FastyBird\NodeWebServer;
 use FastyBird\NodeWebServer\Exceptions;
 use IPub\SlimRouter\Routing;
 use Nette;
@@ -45,14 +46,19 @@ use Throwable;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
+ * @method onServerStart()
  * @method onRequest(ServerRequestInterface $request)
  * @method onResponse(ServerRequestInterface $request, ResponseInterface $response)
- * @method onConsumerMessage()
+ * @method onBeforeConsumeMessage(Bunny\Message $message)
+ * @method onAfterConsumeMessage(Bunny\Message $message)
  */
 class HttpServerCommand extends Console\Command\Command
 {
 
 	use Nette\SmartObject;
+
+	/** @var Closure[] */
+	public $onServerStart = [];
 
 	/** @var Closure[] */
 	public $onRequest = [];
@@ -61,7 +67,10 @@ class HttpServerCommand extends Console\Command\Command
 	public $onResponse = [];
 
 	/** @var Closure[] */
-	public $onConsumerMessage = [];
+	public $onBeforeConsumeMessage = [];
+
+	/** @var Closure[] */
+	public $onAfterConsumeMessage = [];
 
 	/** @var NodeLibsConnections\IRabbitMqConnection */
 	private $rabbitMqConnection;
@@ -179,6 +188,8 @@ class HttpServerCommand extends Console\Command\Command
 
 				$channel->consume(
 					function (Bunny\Message $message, Bunny\Channel $channel, Bunny\Async\Client $client): void {
+						$this->onBeforeConsumeMessage($message);
+
 						$result = $this->exchangeConsumer->consume($message);
 
 						switch ($result) {
@@ -203,7 +214,7 @@ class HttpServerCommand extends Console\Command\Command
 								throw new Exceptions\InvalidArgumentException('Unknown return value of message bus consumer');
 						}
 
-						$this->onConsumerMessage();
+						$this->onAfterConsumeMessage($message);
 					},
 					$this->exchangeConsumer->getQueueName()
 				);
@@ -217,11 +228,39 @@ class HttpServerCommand extends Console\Command\Command
 			$server = new Http\Server(function (ServerRequestInterface $request): ResponseInterface {
 				$this->onRequest($request);
 
-				$response = $this->router->handle($request);
+				try {
+					$response = $this->router->handle($request);
 
-				$this->onResponse($request, $response);
+					$this->onResponse($request, $response);
 
-				return $response;
+					return $response;
+
+				} catch (Throwable $ex) {
+					if ($ex instanceof NodeLibsExceptions\TerminateException) {
+						// Log terminate action reason
+						$this->logger->warning('[TERMINATED] FB devices node - HTTP server', [
+							'exception' => [
+								'message' => $ex->getMessage(),
+								'code'    => $ex->getCode(),
+							],
+							'cmd'       => $this->getName(),
+						]);
+
+					} else {
+						// Log error action reason
+						$this->logger->error('[ERROR] FB devices node - HTTP server', [
+							'exception' => [
+								'message' => $ex->getMessage(),
+								'code'    => $ex->getCode(),
+							],
+							'cmd'       => $this->getName(),
+						]);
+					}
+
+					$this->eventLoop->stop();
+				}
+
+				return NodeWebServer\Http\Response::text('');
 			});
 
 			$socket = new Socket\Server($this->address . ':' . (string) $this->port, $this->eventLoop);
@@ -230,6 +269,8 @@ class HttpServerCommand extends Console\Command\Command
 			if ($socket->getAddress() !== null) {
 				$this->logger->debug(sprintf('[HTTP_SERVER] Listening on "%s"', str_replace('tcp:', 'http:', $socket->getAddress())));
 			}
+
+			$this->onServerStart();
 
 			$this->eventLoop->run();
 

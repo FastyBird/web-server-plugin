@@ -61,10 +61,7 @@
   "autoload" : {
     "psr-4" : {
       "FastyBird\\NodeWebServer\\" : "src/"
-    },
-    "files" : [
-      "src/Events/Symfony/Event.php"
-    ]
+    }
   },
 
   "autoload-dev" : {
