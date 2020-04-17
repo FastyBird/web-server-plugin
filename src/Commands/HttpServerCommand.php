@@ -24,6 +24,7 @@ use FastyBird\NodeLibs\Exceptions as NodeLibsExceptions;
 use FastyBird\NodeLibs\Helpers as NodeLibsHelpers;
 use FastyBird\NodeWebServer;
 use FastyBird\NodeWebServer\Exceptions;
+use Fig\Http\Message\StatusCodeInterface;
 use IPub\SlimRouter\Routing;
 use Nette;
 use Psr\Http\Message\ResponseInterface;
@@ -226,41 +227,48 @@ class HttpServerCommand extends Console\Command\Command
 
 		try {
 			$server = new Http\Server(function (ServerRequestInterface $request): ResponseInterface {
-				$this->onRequest($request);
+				return new Promise\Promise(function ($resolve, $reject) {
+					try {
+						$this->onRequest($request);
 
-				try {
-					$response = $this->router->handle($request);
+						$response = $this->router->handle($request);
 
-					$this->onResponse($request, $response);
+						$this->onResponse($request, $response);
 
-					return $response;
+						$resolve($response);
 
-				} catch (Throwable $ex) {
-					if ($ex instanceof NodeLibsExceptions\TerminateException) {
-						// Log terminate action reason
-						$this->logger->warning('[TERMINATED] FB devices node - HTTP server', [
-							'exception' => [
-								'message' => $ex->getMessage(),
-								'code'    => $ex->getCode(),
-							],
-							'cmd'       => $this->getName(),
-						]);
+					} catch (Throwable $ex) {
+						if ($ex instanceof NodeLibsExceptions\TerminateException) {
+							// Log terminate action reason
+							$this->logger->warning('[TERMINATED] FB devices node - HTTP server', [
+								'exception' => [
+									'message' => $ex->getMessage(),
+									'code'    => $ex->getCode(),
+								],
+								'cmd'       => $this->getName(),
+							]);
 
-					} else {
-						// Log error action reason
-						$this->logger->error('[ERROR] FB devices node - HTTP server', [
-							'exception' => [
-								'message' => $ex->getMessage(),
-								'code'    => $ex->getCode(),
-							],
-							'cmd'       => $this->getName(),
-						]);
+						} else {
+							// Log error action reason
+							$this->logger->error('[ERROR] FB devices node - HTTP server', [
+								'exception' => [
+									'message' => $ex->getMessage(),
+									'code'    => $ex->getCode(),
+								],
+								'cmd'       => $this->getName(),
+							]);
+						}
+
+						$this->eventLoop->stop();
 					}
 
-					$this->eventLoop->stop();
-				}
+					$response = NodeWebServer\Http\Response::text(
+						'Server error',
+						StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR
+					);
 
-				return NodeWebServer\Http\Response::text('');
+					$resolve($response);
+				});
 			});
 
 			$socket = new Socket\Server($this->address . ':' . (string) $this->port, $this->eventLoop);
