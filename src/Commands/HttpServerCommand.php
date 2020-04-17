@@ -226,8 +226,8 @@ class HttpServerCommand extends Console\Command\Command
 		 */
 
 		try {
-			$server = new Http\Server(function (ServerRequestInterface $request): ResponseInterface {
-				return new Promise\Promise(function ($resolve, $reject) {
+			$server = new Http\Server(function (ServerRequestInterface $request): Promise\Promise {
+				return new Promise\Promise(function ($resolve, $reject) use ($request): void {
 					try {
 						$this->onRequest($request);
 
