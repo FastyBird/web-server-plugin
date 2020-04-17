@@ -52,9 +52,11 @@ final class JsonApiMiddlewareTest extends BaseMockeryTestCase
 		$schemaContainer = Mockery::mock(JsonApi\JsonApiSchemaContainer::class);
 		$schemaContainer
 			->shouldReceive('hasSchema')
-			->withArgs([[
-				'value' => 'content',
-			]])
+			->withArgs([
+				[
+					'value' => 'content',
+				],
+			])
 			->andReturn(true)
 			->getMock()
 			->shouldReceive('getSchema')
