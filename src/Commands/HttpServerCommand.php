@@ -297,6 +297,7 @@ class HttpServerCommand extends Console\Command\Command
 				]);
 
 			} else {
+				var_dump($ex->getMessage());
 				// Log error action reason
 				$this->logger->error('[ERROR] FB devices node - HTTP server', [
 					'exception' => [
