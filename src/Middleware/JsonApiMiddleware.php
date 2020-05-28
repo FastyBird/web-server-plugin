@@ -15,6 +15,9 @@
 
 namespace FastyBird\NodeWebServer\Middleware;
 
+use FastRoute;
+use FastRoute\RouteCollector as FastRouteCollector;
+use FastRoute\RouteParser\Std;
 use FastyBird\NodeLibs\Exceptions as NodeLibsExceptions;
 use FastyBird\NodeWebServer\Exceptions;
 use FastyBird\NodeWebServer\Http;
@@ -22,6 +25,8 @@ use FastyBird\NodeWebServer\JsonApi;
 use Fig\Http\Message\RequestMethodInterface;
 use Fig\Http\Message\StatusCodeInterface;
 use IPub\SlimRouter;
+use IPub\SlimRouter\Routing\FastRouteDispatcher;
+use IPub\SlimRouter\Routing\IRoute;
 use Neomerx;
 use Neomerx\JsonApi\Contracts;
 use Neomerx\JsonApi\Schema;
@@ -59,6 +64,9 @@ class JsonApiMiddleware implements MiddlewareInterface
 
 	/** @var DI\Container */
 	private $container;
+
+	/** @var FastRouteDispatcher|null */
+	private $routerDispatcher;
 
 	/**
 	 * @param Http\ResponseFactory $responseFactory
@@ -179,9 +187,18 @@ class JsonApiMiddleware implements MiddlewareInterface
 						} else {
 							$uriRelated = $request->getUri();
 
-							$encoder->withLinks(array_merge($links, [
-								self::LINK_RELATED => new Schema\Link(false, str_replace('/relationships/', '/', $this->uriToString($uriRelated)), false),
-							]));
+							$linkRelated = str_replace('/relationships/', '/', $this->uriToString($uriRelated));
+
+							$results = $this->getRouterDispatcher()->dispatch(
+								RequestMethodInterface::METHOD_GET,
+								$linkRelated
+							);
+
+							if ($results[0] === SlimRouter\Routing\RoutingResults::FOUND) {
+								$encoder->withLinks(array_merge($links, [
+									self::LINK_RELATED => new Schema\Link(false, $linkRelated, false),
+								]));
+							}
 						}
 
 						$content = $encoder->encodeIdentifiers($entity->getData());
@@ -360,6 +377,37 @@ class JsonApiMiddleware implements MiddlewareInterface
 		];
 
 		return http_build_query($query);
+	}
+
+	/**
+	 * @return FastRouteDispatcher
+	 */
+	private function getRouterDispatcher(): FastRouteDispatcher
+	{
+		if ($this->routerDispatcher !== null) {
+			return $this->routerDispatcher;
+		}
+
+		$router = $this->container->getByType(SlimRouter\Routing\IRouter::class);
+
+		$routeDefinitionCallback = function (FastRouteCollector $r) use ($router): void {
+			$basePath = $router->getBasePath();
+
+			/** @var IRoute $route */
+			foreach ($router->getIterator() as $route) {
+				$r->addRoute($route->getMethods(), $basePath . $route->getPattern(), $route->getIdentifier());
+			}
+		};
+
+		/** @var FastRouteDispatcher $dispatcher */
+		$dispatcher = FastRoute\simpleDispatcher($routeDefinitionCallback, [
+			'dispatcher'  => FastRouteDispatcher::class,
+			'routeParser' => new Std(),
+		]);
+
+		$this->routerDispatcher = $dispatcher;
+
+		return $this->routerDispatcher;
 	}
 
 }
