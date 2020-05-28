@@ -46,6 +46,62 @@ final class HttpServerCommandTest extends BaseMockeryTestCase
 		$initialize = Mockery::mock(NodeLibsHelpers\IInitialize::class);
 
 		$consumer = Mockery::mock(NodeLibsConsumers\IExchangeConsumer::class);
+		$consumer
+			->shouldReceive('hasHandlers')
+			->andReturn(true);
+
+		$router = Mockery::mock(SlimRouter\Routing\IRouter::class);
+
+		$logger = Mockery::mock(Log\LoggerInterface::class);
+		$logger
+			->shouldReceive('info')
+			->withArgs(['[STARTING] FB devices node - HTTP server'])
+			->times(1)
+			->getMock()
+			->shouldReceive('debug')
+			->withArgs(['[HTTP_SERVER] Listening on "http://127.0.0.1:8000"'])
+			->times(1);
+
+		$eventLoop = Mockery::mock(EventLoop\LoopInterface::class);
+		$eventLoop
+			->shouldReceive('addReadStream')
+			->getMock()
+			->shouldReceive('run')
+			->withNoArgs();
+
+		$application = new Application();
+		$application->add(new Commands\HttpServerCommand(
+			$rabbitMqConnection,
+			$initialize,
+			$consumer,
+			$logger,
+			$eventLoop,
+			$router
+		));
+
+		$command = $application->get('fb:node:server:start');
+
+		$commandTester = new CommandTester($command);
+		$commandTester->execute([]);
+
+		Assert::true(true);
+	}
+
+	public function testExecuteWithoutRabbit(): void
+	{
+		$promise = Mockery::mock(Promise\PromiseInterface::class);
+		$promise
+			->shouldReceive('then')
+			->andReturn($promise);
+
+		$rabbitMqConnection = Mockery::mock(NodeLibsConnections\IRabbitMqConnection::class);
+
+		$initialize = Mockery::mock(NodeLibsHelpers\IInitialize::class);
+
+		$consumer = Mockery::mock(NodeLibsConsumers\IExchangeConsumer::class);
+		$consumer
+			->shouldReceive('hasHandlers')
+			->andReturn(false);
 
 		$router = Mockery::mock(SlimRouter\Routing\IRouter::class);
 

@@ -148,78 +148,81 @@ class HttpServerCommand extends Console\Command\Command
 		 * Rabbit MQ consumer
 		 */
 
-		$this->rabbitMqConnection->getAsyncClient()
-			->connect()
-			->then(function (Bunny\Async\Client $client) {
-				return $client->channel();
-			})
-			->then(function (Bunny\Channel $channel): Promise\PromiseInterface {
-				$this->rabbitMqConnection->setChannel($channel);
+		// Use rabbit mq only if any handler is registered
+		if ($this->exchangeConsumer->hasHandlers()) {
+			$this->rabbitMqConnection->getAsyncClient()
+				->connect()
+				->then(function (Bunny\Async\Client $client) {
+					return $client->channel();
+				})
+				->then(function (Bunny\Channel $channel): Promise\PromiseInterface {
+					$this->rabbitMqConnection->setChannel($channel);
 
-				$qosResult = $channel->qos(0, 5);
+					$qosResult = $channel->qos(0, 5);
 
-				if ($qosResult instanceof Promise\PromiseInterface) {
-					return $qosResult
-						->then(function () use ($channel): Bunny\Channel {
-							return $channel;
-						});
-				}
+					if ($qosResult instanceof Promise\PromiseInterface) {
+						return $qosResult
+							->then(function () use ($channel): Bunny\Channel {
+								return $channel;
+							});
+					}
 
-				throw new Exceptions\InvalidStateException('RabbitMQ QoS could not be configured');
-			})
-			->then(function (Bunny\Channel $channel): void {
-				// Create exchange
-				$this->initialize->registerExchange();
+					throw new Exceptions\InvalidStateException('RabbitMQ QoS could not be configured');
+				})
+				->then(function (Bunny\Channel $channel): void {
+					// Create exchange
+					$this->initialize->registerExchange();
 
-				// Create queue to connect to...
-				$channel->queueDeclare(
-					$this->exchangeConsumer->getQueueName(),
-					false,
-					true
-				);
-
-				// ...and bind it to the exchange
-				foreach ($this->exchangeConsumer->getRoutingKeys(true) as $routingKey) {
-					$channel->queueBind(
+					// Create queue to connect to...
+					$channel->queueDeclare(
 						$this->exchangeConsumer->getQueueName(),
-						NodeLibs\Constants::RABBIT_MQ_MESSAGE_BUS_EXCHANGE_NAME,
-						$routingKey
+						false,
+						true
 					);
-				}
 
-				$channel->consume(
-					function (Bunny\Message $message, Bunny\Channel $channel, Bunny\Async\Client $client): void {
-						$this->onBeforeConsumeMessage($message);
+					// ...and bind it to the exchange
+					foreach ($this->exchangeConsumer->getRoutingKeys(true) as $routingKey) {
+						$channel->queueBind(
+							$this->exchangeConsumer->getQueueName(),
+							NodeLibs\Constants::RABBIT_MQ_MESSAGE_BUS_EXCHANGE_NAME,
+							$routingKey
+						);
+					}
 
-						$result = $this->exchangeConsumer->consume($message);
+					$channel->consume(
+						function (Bunny\Message $message, Bunny\Channel $channel, Bunny\Async\Client $client): void {
+							$this->onBeforeConsumeMessage($message);
 
-						switch ($result) {
-							case NodeLibsConsumers\IExchangeConsumer::MESSAGE_ACK:
-								$channel->ack($message); // Acknowledge message
-								break;
+							$result = $this->exchangeConsumer->consume($message);
 
-							case NodeLibsConsumers\IExchangeConsumer::MESSAGE_NACK:
-								$channel->nack($message); // Message will be re-queued
-								break;
+							switch ($result) {
+								case NodeLibsConsumers\IExchangeConsumer::MESSAGE_ACK:
+									$channel->ack($message); // Acknowledge message
+									break;
 
-							case NodeLibsConsumers\IExchangeConsumer::MESSAGE_REJECT:
-								$channel->reject($message, false); // Message will be discarded
-								break;
+								case NodeLibsConsumers\IExchangeConsumer::MESSAGE_NACK:
+									$channel->nack($message); // Message will be re-queued
+									break;
 
-							case NodeLibsConsumers\IExchangeConsumer::MESSAGE_REJECT_AND_TERMINATE:
-								$channel->reject($message, false); // Message will be discarded
-								$client->stop();
-								break;
+								case NodeLibsConsumers\IExchangeConsumer::MESSAGE_REJECT:
+									$channel->reject($message, false); // Message will be discarded
+									break;
 
-							default:
-								throw new Exceptions\InvalidArgumentException('Unknown return value of message bus consumer');
-						}
+								case NodeLibsConsumers\IExchangeConsumer::MESSAGE_REJECT_AND_TERMINATE:
+									$channel->reject($message, false); // Message will be discarded
+									$client->stop();
+									break;
 
-						$this->onAfterConsumeMessage($message);
-					},
-					$this->exchangeConsumer->getQueueName()
-				);
-			});
+								default:
+									throw new Exceptions\InvalidArgumentException('Unknown return value of message bus consumer');
+							}
+
+							$this->onAfterConsumeMessage($message);
+						},
+						$this->exchangeConsumer->getQueueName()
+					);
+				});
+		}
 
 		/**
 		 * HTTP server
