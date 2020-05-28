@@ -59,7 +59,7 @@ final class HttpServerCommandTest extends BaseMockeryTestCase
 			->times(1)
 			->getMock()
 			->shouldReceive('debug')
-			->withArgs(['[HTTP_SERVER] Listening on "http://127.0.0.1:8000"'])
+			->withArgs(['[HTTP_SERVER] Listening on "http://127.0.0.1:8001"'])
 			->times(1);
 
 		$eventLoop = Mockery::mock(EventLoop\LoopInterface::class);
@@ -76,7 +76,9 @@ final class HttpServerCommandTest extends BaseMockeryTestCase
 			$consumer,
 			$logger,
 			$eventLoop,
-			$router
+			$router,
+			'127.0.0.1',
+			8001
 		));
 
 		$command = $application->get('fb:node:server:start');
@@ -112,11 +114,8 @@ final class HttpServerCommandTest extends BaseMockeryTestCase
 			->times(1)
 			->getMock()
 			->shouldReceive('debug')
-			->withArgs(['[HTTP_SERVER] Listening on "http://127.0.0.1:8000"'])
-			->times(1)
-			->getMock()
-			->shouldReceive('error')
-			->withArgs(['BUT WHY']);
+			->withArgs(['[HTTP_SERVER] Listening on "http://127.0.0.1:8002"'])
+			->times(1);
 
 		$eventLoop = Mockery::mock(EventLoop\LoopInterface::class);
 		$eventLoop
@@ -132,7 +131,9 @@ final class HttpServerCommandTest extends BaseMockeryTestCase
 			$consumer,
 			$logger,
 			$eventLoop,
-			$router
+			$router,
+			'127.0.0.1',
+			8002
 		));
 
 		$command = $application->get('fb:node:server:start');
