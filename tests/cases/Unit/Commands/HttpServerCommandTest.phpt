@@ -113,7 +113,10 @@ final class HttpServerCommandTest extends BaseMockeryTestCase
 			->getMock()
 			->shouldReceive('debug')
 			->withArgs(['[HTTP_SERVER] Listening on "http://127.0.0.1:8000"'])
-			->times(1);
+			->times(1)
+			->getMock()
+			->shouldReceive('error')
+			->withArgs(['BUT WHY']);
 
 		$eventLoop = Mockery::mock(EventLoop\LoopInterface::class);
 		$eventLoop
