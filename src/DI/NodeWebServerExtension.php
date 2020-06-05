@@ -47,10 +47,6 @@ class NodeWebServerExtension extends DI\CompilerExtension
 				'address' => Schema\Expect::string('127.0.0.1'),
 				'port'    => Schema\Expect::int(8000),
 			]),
-			'meta'   => Schema\Expect::structure([
-				'author'    => Schema\Expect::anyOf(Schema\Expect::string(), Schema\Expect::array())->default('FastyBird dev team'),
-				'copyright' => Schema\Expect::string()->default('FastyBird s.r.o'),
-			]),
 		]);
 	}
 
