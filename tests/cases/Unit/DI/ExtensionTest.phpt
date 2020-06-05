@@ -6,7 +6,6 @@ use FastyBird\NodeLibs\Boot;
 use FastyBird\NodeWebServer\Commands;
 use FastyBird\NodeWebServer\DI;
 use FastyBird\NodeWebServer\Http;
-use FastyBird\NodeWebServer\Middleware;
 use Ninjify\Nunjuck\TestCase\BaseTestCase;
 use React\EventLoop;
 use Tester\Assert;
@@ -30,7 +29,6 @@ final class ExtensionTest extends BaseTestCase
 
 		$container = $configurator->createContainer();
 
-		Assert::notNull($container->getByType(Middleware\JsonApiMiddleware::class));
 		Assert::notNull($container->getByType(Commands\HttpServerCommand::class));
 		Assert::notNull($container->getByType(Http\ResponseFactory::class));
 		Assert::notNull($container->getByType(EventLoop\LoopInterface::class));

@@ -22,7 +22,7 @@ $ composer require fastybird/node-web-server
 
 ## Documentation
 
-Learn how to build microservices with helpers & services in [documentation](https://github.com/FastyBird/node-web-server/blob/master/docs/en/index.md).
+Learn how to build microservices http api in [documentation](https://github.com/FastyBird/node-web-server/blob/master/docs/en/index.md).
 
 ***
 Homepage [http://www.fastybird.com](http://www.fastybird.com) and repository [https://github.com/FastyBird/node-web-server](https://github.com/FastyBird/node-web-server).

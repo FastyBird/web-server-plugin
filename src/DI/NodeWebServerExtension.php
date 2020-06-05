@@ -17,8 +17,6 @@ namespace FastyBird\NodeWebServer\DI;
 
 use FastyBird\NodeWebServer\Commands;
 use FastyBird\NodeWebServer\Http;
-use FastyBird\NodeWebServer\JsonApi;
-use FastyBird\NodeWebServer\Middleware;
 use IPub\SlimRouter;
 use Nette;
 use Nette\DI;
@@ -73,18 +71,9 @@ class NodeWebServerExtension extends DI\CompilerExtension
 			->setFactory('React\EventLoop\Factory::create');
 
 		$builder->addDefinition(null)
-			->setType(Middleware\JsonApiMiddleware::class)
-			->setArgument('metaAuthor', $configuration->meta->author)
-			->setArgument('metaCopyright', $configuration->meta->copyright)
-			->addTag(self::ROUTER_MIDDLEWARE_TAG, ['priority' => 100]);
-
-		$builder->addDefinition(null)
 			->setType(Commands\HttpServerCommand::class)
 			->setArgument('address', $configuration->server->address)
 			->setArgument('port', $configuration->server->port);
-
-		$builder->addDefinition(null)
-			->setType(JsonApi\JsonApiSchemaContainer::class);
 	}
 
 	/**
@@ -127,23 +116,6 @@ class NodeWebServerExtension extends DI\CompilerExtension
 
 			foreach ($middlewareServices as $middlewareService => $middlewareServiceTags) {
 				$routerService->addSetup('addMiddleware', [$builder->getDefinition($middlewareService)]);
-			}
-		}
-
-		/**
-		 * JSON:API SCHEMAS
-		 */
-
-		$schemaContainerServiceName = $builder->getByType(JsonApi\JsonApiSchemaContainer::class, true);
-
-		if ($schemaContainerServiceName !== null) {
-			$schemaContainerService = $builder->getDefinition($schemaContainerServiceName);
-			assert($schemaContainerService instanceof DI\Definitions\ServiceDefinition);
-
-			$schemasServices = $builder->findByType(JsonApi\ISchema::class);
-
-			foreach ($schemasServices as $schemasService) {
-				$schemaContainerService->addSetup('add', [$schemasService]);
 			}
 		}
 	}
