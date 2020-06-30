@@ -97,6 +97,21 @@ class HttpServerCommand extends Console\Command\Command
 	/** @var int */
 	private $port;
 
+	/** @var string[] */
+	private $routingKeys = [];
+
+	/**
+	 * @param NodeLibsConnections\IRabbitMqConnection $rabbitMqConnection
+	 * @param NodeLibsHelpers\IInitialize $initialize
+	 * @param NodeLibsConsumers\IExchangeConsumer $exchangeConsumer
+	 * @param Log\LoggerInterface $logger
+	 * @param EventLoop\LoopInterface $eventLoop
+	 * @param Routing\IRouter $router
+	 * @param string $address
+	 * @param int $port
+	 * @param string|null $name
+	 * @param string[] $routingKeys
+	 */
 	public function __construct(
 		NodeLibsConnections\IRabbitMqConnection $rabbitMqConnection,
 		NodeLibsHelpers\IInitialize $initialize,
@@ -106,7 +121,8 @@ class HttpServerCommand extends Console\Command\Command
 		Routing\IRouter $router,
 		string $address = '127.0.0.1',
 		int $port = 8000,
-		?string $name = null
+		?string $name = null,
+		array $routingKeys = []
 	) {
 		parent::__construct($name);
 
@@ -121,6 +137,7 @@ class HttpServerCommand extends Console\Command\Command
 
 		$this->address = $address;
 		$this->port = $port;
+		$this->routingKeys = $routingKeys;
 	}
 
 	/**
@@ -181,7 +198,7 @@ class HttpServerCommand extends Console\Command\Command
 					);
 
 					// ...and bind it to the exchange
-					foreach ($this->exchangeConsumer->getRoutingKeys(true) as $routingKey) {
+					foreach ($this->routingKeys as $routingKey) {
 						$channel->queueBind(
 							$this->exchangeConsumer->getQueueName(),
 							NodeLibs\Constants::RABBIT_MQ_MESSAGE_BUS_EXCHANGE_NAME,

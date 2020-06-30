@@ -43,10 +43,11 @@ class NodeWebServerExtension extends DI\CompilerExtension
 	public function getConfigSchema(): Schema\Schema
 	{
 		return Schema\Expect::structure([
-			'server' => Schema\Expect::structure([
+			'server'      => Schema\Expect::structure([
 				'address' => Schema\Expect::string('127.0.0.1'),
 				'port'    => Schema\Expect::int(8000),
 			]),
+			'routingKeys' => Schema\Expect::array()->items(Schema\Expect::string()),
 		]);
 	}
 
@@ -69,7 +70,8 @@ class NodeWebServerExtension extends DI\CompilerExtension
 		$builder->addDefinition(null)
 			->setType(Commands\HttpServerCommand::class)
 			->setArgument('address', $configuration->server->address)
-			->setArgument('port', $configuration->server->port);
+			->setArgument('port', $configuration->server->port)
+			->setArgument('routingKeys', $configuration->routingKeys);
 	}
 
 	/**
