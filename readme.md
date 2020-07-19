@@ -8,9 +8,9 @@
 [![Latest stable](https://img.shields.io/packagist/v/FastyBird/node-web-server.svg?style=flat-square)](https://packagist.org/packages/FastyBird/node-web-server)
 [![PHPStan](https://img.shields.io/badge/PHPStan-enabled-brightgreen.svg?style=flat-square)](https://github.com/phpstan/phpstan)
 
-## What is FastyBird node web server library?
+## What is FastyBird web server library?
 
-This is a [Nette framework](https://nette.org) extension with http server support based on [Reactphp http](https://github.com/reactphp/http) for [FastyBird](https://www.fastybird.com) IoT microservices
+This is a [Nette framework](https://nette.org) extension which is implementing http server based on [Reactphp http](https://github.com/reactphp/http) for [FastyBird](https://www.fastybird.com) IoT microservices
 
 ## Installation
 

@@ -15,15 +15,8 @@
 
 namespace FastyBird\NodeWebServer\Commands;
 
-use Bunny;
 use Closure;
-use FastyBird\NodeLibs;
-use FastyBird\NodeLibs\Connections as NodeLibsConnections;
-use FastyBird\NodeLibs\Consumers as NodeLibsConsumers;
-use FastyBird\NodeLibs\Exceptions as NodeLibsExceptions;
-use FastyBird\NodeLibs\Helpers as NodeLibsHelpers;
 use FastyBird\NodeWebServer;
-use FastyBird\NodeWebServer\Exceptions;
 use Fig\Http\Message\StatusCodeInterface;
 use IPub\SlimRouter\Routing;
 use Nette;
@@ -47,16 +40,18 @@ use Throwable;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
+ * @method onBeforeServerStart()
  * @method onServerStart()
  * @method onRequest(ServerRequestInterface $request)
  * @method onResponse(ServerRequestInterface $request, ResponseInterface $response)
- * @method onBeforeConsumeMessage(Bunny\Message $message)
- * @method onAfterConsumeMessage(Bunny\Message $message)
  */
 class HttpServerCommand extends Console\Command\Command
 {
 
 	use Nette\SmartObject;
+
+	/** @var Closure[] */
+	public $onBeforeServerStart = [];
 
 	/** @var Closure[] */
 	public $onServerStart = [];
@@ -66,21 +61,6 @@ class HttpServerCommand extends Console\Command\Command
 
 	/** @var Closure[] */
 	public $onResponse = [];
-
-	/** @var Closure[] */
-	public $onBeforeConsumeMessage = [];
-
-	/** @var Closure[] */
-	public $onAfterConsumeMessage = [];
-
-	/** @var NodeLibsConnections\IRabbitMqConnection */
-	private $rabbitMqConnection;
-
-	/** @var NodeLibsHelpers\IInitialize */
-	private $initialize;
-
-	/** @var NodeLibsConsumers\IExchangeConsumer */
-	private $exchangeConsumer;
 
 	/** @var Routing\IRouter */
 	private $router;
@@ -97,47 +77,31 @@ class HttpServerCommand extends Console\Command\Command
 	/** @var int */
 	private $port;
 
-	/** @var string[] */
-	private $routingKeys = [];
-
 	/**
-	 * @param NodeLibsConnections\IRabbitMqConnection $rabbitMqConnection
-	 * @param NodeLibsHelpers\IInitialize $initialize
-	 * @param NodeLibsConsumers\IExchangeConsumer $exchangeConsumer
-	 * @param Log\LoggerInterface $logger
 	 * @param EventLoop\LoopInterface $eventLoop
 	 * @param Routing\IRouter $router
 	 * @param string $address
 	 * @param int $port
+	 * @param Log\LoggerInterface|null $logger
 	 * @param string|null $name
-	 * @param string[] $routingKeys
 	 */
 	public function __construct(
-		NodeLibsConnections\IRabbitMqConnection $rabbitMqConnection,
-		NodeLibsHelpers\IInitialize $initialize,
-		NodeLibsConsumers\IExchangeConsumer $exchangeConsumer,
-		Log\LoggerInterface $logger,
 		EventLoop\LoopInterface $eventLoop,
 		Routing\IRouter $router,
 		string $address = '127.0.0.1',
 		int $port = 8000,
-		?string $name = null,
-		array $routingKeys = []
+		?Log\LoggerInterface $logger = null,
+		?string $name = null
 	) {
 		parent::__construct($name);
 
-		$this->rabbitMqConnection = $rabbitMqConnection;
-		$this->initialize = $initialize;
-		$this->exchangeConsumer = $exchangeConsumer;
-
 		$this->router = $router;
-		$this->logger = $logger;
+		$this->logger = $logger ?? new Log\NullLogger();
 
 		$this->eventLoop = $eventLoop;
 
 		$this->address = $address;
 		$this->port = $port;
-		$this->routingKeys = $routingKeys;
 	}
 
 	/**
@@ -159,93 +123,15 @@ class HttpServerCommand extends Console\Command\Command
 		Input\InputInterface $input,
 		Output\OutputInterface $output
 	): int {
-		$this->logger->info('[STARTING] FB devices node - HTTP server');
-
-		/**
-		 * Rabbit MQ consumer
-		 */
-
-		// Use rabbit mq only if any handler is registered
-		if ($this->exchangeConsumer->hasHandlers()) {
-			$this->rabbitMqConnection->getAsyncClient()
-				->connect()
-				->then(function (Bunny\Async\Client $client) {
-					return $client->channel();
-				})
-				->then(function (Bunny\Channel $channel): Promise\PromiseInterface {
-					$this->rabbitMqConnection->setChannel($channel);
-
-					$qosResult = $channel->qos(0, 5);
-
-					if ($qosResult instanceof Promise\PromiseInterface) {
-						return $qosResult
-							->then(function () use ($channel): Bunny\Channel {
-								return $channel;
-							});
-					}
-
-					throw new Exceptions\InvalidStateException('RabbitMQ QoS could not be configured');
-				})
-				->then(function (Bunny\Channel $channel): void {
-					// Create exchange
-					$this->initialize->registerExchange();
-
-					// Create queue to connect to...
-					$channel->queueDeclare(
-						$this->exchangeConsumer->getQueueName(),
-						false,
-						true
-					);
-
-					// ...and bind it to the exchange
-					foreach ($this->routingKeys as $routingKey) {
-						$channel->queueBind(
-							$this->exchangeConsumer->getQueueName(),
-							NodeLibs\Constants::RABBIT_MQ_MESSAGE_BUS_EXCHANGE_NAME,
-							$routingKey
-						);
-					}
-
-					$channel->consume(
-						function (Bunny\Message $message, Bunny\Channel $channel, Bunny\Async\Client $client): void {
-							$this->onBeforeConsumeMessage($message);
-
-							$result = $this->exchangeConsumer->consume($message);
-
-							switch ($result) {
-								case NodeLibsConsumers\IExchangeConsumer::MESSAGE_ACK:
-									$channel->ack($message); // Acknowledge message
-									break;
-
-								case NodeLibsConsumers\IExchangeConsumer::MESSAGE_NACK:
-									$channel->nack($message); // Message will be re-queued
-									break;
-
-								case NodeLibsConsumers\IExchangeConsumer::MESSAGE_REJECT:
-									$channel->reject($message, false); // Message will be discarded
-									break;
-
-								case NodeLibsConsumers\IExchangeConsumer::MESSAGE_REJECT_AND_TERMINATE:
-									$channel->reject($message, false); // Message will be discarded
-									$client->stop();
-									break;
-
-								default:
-									throw new Exceptions\InvalidArgumentException('Unknown return value of message bus consumer');
-							}
-
-							$this->onAfterConsumeMessage($message);
-						},
-						$this->exchangeConsumer->getQueueName()
-					);
-				});
-		}
+		$this->logger->info('[FB:WEB_SERVER] FB devices node - HTTP server');
 
 		/**
 		 * HTTP server
 		 */
 
 		try {
+			$this->onBeforeServerStart();
+
 			$server = new Http\Server(function (ServerRequestInterface $request): Promise\Promise {
 				return new Promise\Promise(function ($resolve, $reject) use ($request): void {
 					try {
@@ -258,26 +144,14 @@ class HttpServerCommand extends Console\Command\Command
 						$resolve($response);
 
 					} catch (Throwable $ex) {
-						if ($ex instanceof NodeLibsExceptions\TerminateException) {
-							// Log terminate action reason
-							$this->logger->warning('[TERMINATED] FB devices node - HTTP server', [
-								'exception' => [
-									'message' => $ex->getMessage(),
-									'code'    => $ex->getCode(),
-								],
-								'cmd'       => $this->getName(),
-							]);
-
-						} else {
-							// Log error action reason
-							$this->logger->error('[ERROR] FB devices node - HTTP server', [
-								'exception' => [
-									'message' => $ex->getMessage(),
-									'code'    => $ex->getCode(),
-								],
-								'cmd'       => $this->getName(),
-							]);
-						}
+						// Log error action reason
+						$this->logger->error('[FB:WEB_SERVER] FB devices node - HTTP server', [
+							'exception' => [
+								'message' => $ex->getMessage(),
+								'code'    => $ex->getCode(),
+							],
+							'cmd'       => $this->getName(),
+						]);
 
 						$this->eventLoop->stop();
 					}
@@ -295,7 +169,7 @@ class HttpServerCommand extends Console\Command\Command
 			$server->listen($socket);
 
 			if ($socket->getAddress() !== null) {
-				$this->logger->debug(sprintf('[HTTP_SERVER] Listening on "%s"', str_replace('tcp:', 'http:', $socket->getAddress())));
+				$this->logger->debug(sprintf('[FB:WEB_SERVER] Listening on "%s"', str_replace('tcp:', 'http:', $socket->getAddress())));
 			}
 
 			$this->onServerStart();
@@ -303,27 +177,14 @@ class HttpServerCommand extends Console\Command\Command
 			$this->eventLoop->run();
 
 		} catch (Throwable $ex) {
-			if ($ex instanceof NodeLibsExceptions\TerminateException) {
-				// Log terminate action reason
-				$this->logger->warning('[TERMINATED] FB devices node - HTTP server', [
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code'    => $ex->getCode(),
-					],
-					'cmd'       => $this->getName(),
-				]);
-
-			} else {
-				var_dump($ex->getMessage());
-				// Log error action reason
-				$this->logger->error('[ERROR] FB devices node - HTTP server', [
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code'    => $ex->getCode(),
-					],
-					'cmd'       => $this->getName(),
-				]);
-			}
+			// Log error action reason
+			$this->logger->error('[FB:WEB_SERVER] FB devices node - HTTP server', [
+				'exception' => [
+					'message' => $ex->getMessage(),
+					'code'    => $ex->getCode(),
+				],
+				'cmd'       => $this->getName(),
+			]);
 
 			$this->eventLoop->stop();
 		}

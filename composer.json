@@ -1,15 +1,15 @@
 {
   "name" : "fastybird/node-web-server",
   "type" : "library",
-  "description" : "FastyBird node web server with message queue",
+  "description" : "FastyBird simple web server for nodes",
   "keywords" : [
     "fastybird",
     "fb",
     "libs",
+    "library",
     "webserver",
     "server",
-    "rabbit",
-    "library"
+    "http"
   ],
 
   "homepage" : "https://www.fastybird.com",
@@ -33,11 +33,12 @@
   "minimum-stability" : "dev",
 
   "require" : {
-    "php" : ">=7.2.0",
-    "fastybird/node-libs" : "^0.6",
+    "php" : ">=7.3.0",
+    "contributte/console" : "^0.8",
     "ipub/slim-router" : "^0.1",
     "nette/bootstrap" : "^3.0",
     "nette/di" : "^3.0",
+    "psr/log" : "^1.1",
     "react/http" : "^0.8"
   },
 
