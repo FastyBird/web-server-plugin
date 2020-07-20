@@ -25,7 +25,7 @@ use React\EventLoop;
 use stdClass;
 
 /**
- * Microservice node helpers extension container
+ * Simple web server extension container
  *
  * @package        FastyBird:NodeWebServer!
  * @subpackage     DI
