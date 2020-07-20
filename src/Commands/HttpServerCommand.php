@@ -4,7 +4,7 @@
  * HttpServerCommand.php
  *
  * @license        More in license.md
- * @copyright      https://www.fastybird.com
+ * @copyright      https://fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:NodeWebServer!
  * @subpackage     Commands
@@ -123,7 +123,7 @@ class HttpServerCommand extends Console\Command\Command
 		Input\InputInterface $input,
 		Output\OutputInterface $output
 	): int {
-		$this->logger->info('[FB:WEB_SERVER] FB devices node - HTTP server');
+		$this->logger->info('[FB:WEB_SERVER] Starting HTTP server');
 
 		/**
 		 * HTTP server
@@ -145,7 +145,7 @@ class HttpServerCommand extends Console\Command\Command
 
 					} catch (Throwable $ex) {
 						// Log error action reason
-						$this->logger->error('[FB:WEB_SERVER] FB devices node - HTTP server', [
+						$this->logger->error('[FB:WEB_SERVER] Stopping HTTP server', [
 							'exception' => [
 								'message' => $ex->getMessage(),
 								'code'    => $ex->getCode(),
@@ -178,7 +178,7 @@ class HttpServerCommand extends Console\Command\Command
 
 		} catch (Throwable $ex) {
 			// Log error action reason
-			$this->logger->error('[FB:WEB_SERVER] FB devices node - HTTP server', [
+			$this->logger->error('[FB:WEB_SERVER] Stopping HTTP server', [
 				'exception' => [
 					'message' => $ex->getMessage(),
 					'code'    => $ex->getCode(),

@@ -2,9 +2,9 @@
 # Node web server DI configuration
 #
 # @license		More in license.md
-# @copyright	https://www.fastybird.com
+# @copyright	https://fastybird.com
 # @author		Adam Kadlec <adam.kadlec@fastybird.com>
-# @package		FastyBird:NodeExchange!
+# @package      FastyBird:NodeWebServer!
 # @subpackage	config
 # @since		0.1.0
 #
@@ -17,7 +17,7 @@ extensions:
 	contributteConsole	: Contributte\Console\DI\ConsoleExtension(%consoleMode%)
 
 contributteConsole:
-	name: FastyBird:Libraries!
+	name: FastyBird:NodeWebServer!
 	version: '1.0'
 	catchExceptions: true
 	autoExit: true

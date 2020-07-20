@@ -10,7 +10,7 @@
 
 ## What is FastyBird web server library?
 
-This is a [Nette framework](https://nette.org) extension which is implementing http server based on [Reactphp http](https://github.com/reactphp/http) for [FastyBird](https://www.fastybird.com) IoT microservices
+This is a [Nette framework](https://nette.org) extension which is implementing http server based on [Reactphp http](https://github.com/reactphp/http) for [FastyBird](https://fastybird.com) IoT microservices
 
 ## Installation
 
@@ -25,4 +25,4 @@ $ composer require fastybird/node-web-server
 Learn how to build microservices http api in [documentation](https://github.com/FastyBird/node-web-server/blob/master/docs/en/index.md).
 
 ***
-Homepage [http://www.fastybird.com](http://www.fastybird.com) and repository [https://github.com/FastyBird/node-web-server](https://github.com/FastyBird/node-web-server).
+Homepage [http://fastybird.com](http://fastybird.com) and repository [https://github.com/FastyBird/node-web-server](https://github.com/FastyBird/node-web-server).
