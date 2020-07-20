@@ -33,7 +33,7 @@ final class HttpServerCommandTest extends BaseMockeryTestCase
 		$logger = Mockery::mock(Log\LoggerInterface::class);
 		$logger
 			->shouldReceive('info')
-			->withArgs(['[FB:WEB_SERVER] FB devices node - HTTP server'])
+			->withArgs(['[FB:WEB_SERVER] Starting HTTP server'])
 			->times(1)
 			->getMock()
 			->shouldReceive('debug')
@@ -76,7 +76,7 @@ final class HttpServerCommandTest extends BaseMockeryTestCase
 		$logger = Mockery::mock(Log\LoggerInterface::class);
 		$logger
 			->shouldReceive('info')
-			->withArgs(['[FB:WEB_SERVER] FB devices node - HTTP server'])
+			->withArgs(['[FB:WEB_SERVER] Starting HTTP server'])
 			->times(1)
 			->getMock()
 			->shouldReceive('debug')
