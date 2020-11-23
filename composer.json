@@ -1,7 +1,7 @@
 {
-  "name" : "fastybird/node-web-server",
+  "name" : "fastybird/web-server",
   "type" : "library",
-  "description" : "FastyBird simple web server for nodes",
+  "description" : "FastyBird simple web server",
   "keywords" : [
     "fastybird",
     "fb",
@@ -39,7 +39,7 @@
     "nette/bootstrap" : "^3.0",
     "nette/di" : "^3.0",
     "psr/log" : "^1.1",
-    "react/http" : "^0.8"
+    "react/http" : "^1.0"
   },
 
   "require-dev" : {
@@ -57,7 +57,7 @@
 
   "autoload" : {
     "psr-4" : {
-      "FastyBird\\NodeWebServer\\" : "src/"
+      "FastyBird\\WebServer\\" : "src/"
     }
   },
 

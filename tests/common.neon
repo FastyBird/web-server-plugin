@@ -4,7 +4,7 @@
 # @license		More in license.md
 # @copyright	https://fastybird.com
 # @author		Adam Kadlec <adam.kadlec@fastybird.com>
-# @package      FastyBird:NodeWebServer!
+# @package      FastyBird:WebServer!
 # @subpackage	config
 # @since		0.1.0
 #
@@ -17,7 +17,7 @@ extensions:
 	contributteConsole	: Contributte\Console\DI\ConsoleExtension(%consoleMode%)
 
 contributteConsole:
-	name: FastyBird:NodeWebServer!
+	name: FastyBird:WebServer!
 	version: '1.0'
 	catchExceptions: true
 	autoExit: true

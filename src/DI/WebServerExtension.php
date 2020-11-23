@@ -1,22 +1,22 @@
 <?php declare(strict_types = 1);
 
 /**
- * NodeWebServerExtension.php
+ * WebServerExtension.php
  *
  * @license        More in license.md
  * @copyright      https://fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:NodeWebServer!
+ * @package        FastyBird:WebServer!
  * @subpackage     DI
  * @since          0.1.0
  *
  * @date           21.03.20
  */
 
-namespace FastyBird\NodeWebServer\DI;
+namespace FastyBird\WebServer\DI;
 
-use FastyBird\NodeWebServer\Commands;
-use FastyBird\NodeWebServer\Http;
+use FastyBird\WebServer\Commands;
+use FastyBird\WebServer\Http;
 use IPub\SlimRouter;
 use Nette;
 use Nette\DI;
@@ -27,12 +27,12 @@ use stdClass;
 /**
  * Simple web server extension container
  *
- * @package        FastyBird:NodeWebServer!
+ * @package        FastyBird:WebServer!
  * @subpackage     DI
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class NodeWebServerExtension extends DI\CompilerExtension
+class WebServerExtension extends DI\CompilerExtension
 {
 
 	public const ROUTER_MIDDLEWARE_TAG = 'middleware';
@@ -130,7 +130,7 @@ class NodeWebServerExtension extends DI\CompilerExtension
 			Nette\Configurator $config,
 			DI\Compiler $compiler
 		) use ($extensionName): void {
-			$compiler->addExtension($extensionName, new NodeWebServerExtension());
+			$compiler->addExtension($extensionName, new WebServerExtension());
 		};
 	}
 

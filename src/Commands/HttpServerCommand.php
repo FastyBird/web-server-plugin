@@ -6,17 +6,17 @@
  * @license        More in license.md
  * @copyright      https://fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:NodeWebServer!
+ * @package        FastyBird:WebServer!
  * @subpackage     Commands
  * @since          0.1.0
  *
  * @date           15.03.20
  */
 
-namespace FastyBird\NodeWebServer\Commands;
+namespace FastyBird\WebServer\Commands;
 
 use Closure;
-use FastyBird\NodeWebServer;
+use FastyBird\WebServer;
 use Fig\Http\Message\StatusCodeInterface;
 use IPub\SlimRouter\Routing;
 use Nette;
@@ -35,7 +35,7 @@ use Throwable;
 /**
  * HTTP server command
  *
- * @package        FastyBird:NodeWebServer!
+ * @package        FastyBird:WebServer!
  * @subpackage     Commands
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
@@ -132,7 +132,7 @@ class HttpServerCommand extends Console\Command\Command
 		try {
 			$this->onBeforeServerStart();
 
-			$server = new Http\Server(function (ServerRequestInterface $request): Promise\Promise {
+			$server = new Http\Server($this->eventLoop, function (ServerRequestInterface $request): Promise\Promise {
 				return new Promise\Promise(function ($resolve, $reject) use ($request): void {
 					try {
 						$this->onRequest($request);
@@ -156,7 +156,7 @@ class HttpServerCommand extends Console\Command\Command
 						$this->eventLoop->stop();
 					}
 
-					$response = NodeWebServer\Http\Response::text(
+					$response = WebServer\Http\Response::text(
 						'Server error',
 						StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR
 					);

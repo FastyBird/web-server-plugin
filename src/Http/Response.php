@@ -6,22 +6,22 @@
  * @license        More in license.md
  * @copyright      https://fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:NodeWebServer!
+ * @package        FastyBird:WebServer!
  * @subpackage     Http
  * @since          0.1.0
  *
  * @date           17.03.20
  */
 
-namespace FastyBird\NodeWebServer\Http;
+namespace FastyBird\WebServer\Http;
 
-use FastyBird\NodeWebServer\Exceptions;
+use FastyBird\WebServer\Exceptions;
 use IPub\SlimRouter;
 
 /**
  * Extended HTTP response
  *
- * @package        FastyBird:NodeWebServer!
+ * @package        FastyBird:WebServer!
  * @subpackage     Http
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

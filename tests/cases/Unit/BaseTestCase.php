@@ -2,7 +2,7 @@
 
 namespace Tests\Cases;
 
-use FastyBird\NodeWebServer;
+use FastyBird\WebServer;
 use Nette;
 use Nette\DI;
 use Ninjify\Nunjuck\TestCase\BaseMockeryTestCase;
@@ -44,7 +44,7 @@ abstract class BaseTestCase extends BaseMockeryTestCase
 			$config->addConfig($additionalConfig);
 		}
 
-		NodeWebServer\DI\NodeWebServerExtension::register($config);
+		WebServer\DI\WebServerExtension::register($config);
 
 		return $config->createContainer();
 	}

@@ -2,8 +2,8 @@
 
 namespace Tests\Cases;
 
-use FastyBird\NodeWebServer\Commands;
-use FastyBird\NodeWebServer\Http;
+use FastyBird\WebServer\Commands;
+use FastyBird\WebServer\Http;
 use React\EventLoop;
 use Tester\Assert;
 

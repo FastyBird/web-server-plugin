@@ -2,7 +2,7 @@
 
 namespace Tests\Cases;
 
-use FastyBird\NodeWebServer\Commands;
+use FastyBird\WebServer\Commands;
 use IPub\SlimRouter;
 use Mockery;
 use Ninjify\Nunjuck\TestCase\BaseMockeryTestCase;
