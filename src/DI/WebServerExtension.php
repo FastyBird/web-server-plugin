@@ -124,7 +124,7 @@ class WebServerExtension extends DI\CompilerExtension
 	 */
 	public static function register(
 		Nette\Configurator $config,
-		string $extensionName = 'nodeWebServer'
+		string $extensionName = 'fbWebServer'
 	): void {
 		$config->onCompile[] = function (
 			Nette\Configurator $config,
