@@ -133,7 +133,7 @@ class HttpServerCommand extends Console\Command\Command
 			$this->onBeforeServerStart();
 
 			$server = new Http\Server($this->eventLoop, function (ServerRequestInterface $request): Promise\Promise {
-				return new Promise\Promise(function ($resolve, $reject) use ($request): void {
+				return new Promise\Promise(function ($resolve) use ($request): void {
 					try {
 						$this->onRequest($request);
 
