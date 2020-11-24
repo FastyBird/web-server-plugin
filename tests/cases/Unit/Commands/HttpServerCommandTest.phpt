@@ -56,7 +56,7 @@ final class HttpServerCommandTest extends BaseMockeryTestCase
 			$logger
 		));
 
-		$command = $application->get('fb:node:server:start');
+		$command = $application->get('fb:web-server:start');
 
 		$commandTester = new CommandTester($command);
 		$commandTester->execute([]);
@@ -99,7 +99,7 @@ final class HttpServerCommandTest extends BaseMockeryTestCase
 			$logger
 		));
 
-		$command = $application->get('fb:node:server:start');
+		$command = $application->get('fb:web-server:start');
 
 		$commandTester = new CommandTester($command);
 		$commandTester->execute([]);

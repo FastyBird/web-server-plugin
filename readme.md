@@ -22,7 +22,7 @@ $ composer require fastybird/web-server
 
 ## Documentation
 
-Learn how to build microservices http api in [documentation](https://github.com/FastyBird/web-server/blob/master/docs/en/index.md).
+Learn how to build handle http api requests in [documentation](https://github.com/FastyBird/web-server/blob/master/docs/en/index.md).
 
 ***
 Homepage [http://fastybird.com](http://fastybird.com) and repository [https://github.com/FastyBird/web-server](https://github.com/FastyBird/web-server).

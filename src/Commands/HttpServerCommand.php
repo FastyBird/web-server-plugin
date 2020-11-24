@@ -112,7 +112,7 @@ class HttpServerCommand extends Console\Command\Command
 		parent::configure();
 
 		$this
-			->setName('fb:node:server:start')
+			->setName('fb:web-server:start')
 			->setDescription('Start http server.');
 	}
 
