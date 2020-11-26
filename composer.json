@@ -33,7 +33,7 @@
   "minimum-stability" : "dev",
 
   "require" : {
-    "php" : ">=7.3.0",
+    "php" : ">=7.4.0",
     "contributte/console" : "^0.8",
     "ipub/slim-router" : "^0.1",
     "nette/bootstrap" : "^3.0",
