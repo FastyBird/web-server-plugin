@@ -44,6 +44,8 @@ use Throwable;
  * @method onServerStart()
  * @method onRequest(ServerRequestInterface $request)
  * @method onResponse(ServerRequestInterface $request, ResponseInterface $response)
+ * @method onSocketConnect(Socket\ConnectionInterface $connection)
+ * @method onSocketError(Throwable $ex)
  */
 class HttpServerCommand extends Console\Command\Command
 {
@@ -61,6 +63,12 @@ class HttpServerCommand extends Console\Command\Command
 
 	/** @var Closure[] */
 	public $onResponse = [];
+
+	/** @var Closure[] */
+	public $onSocketConnect = [];
+
+	/** @var Closure[] */
+	public $onSocketError = [];
 
 	/** @var Routing\IRouter */
 	private $router;
@@ -166,6 +174,15 @@ class HttpServerCommand extends Console\Command\Command
 			});
 
 			$socket = new Socket\Server($this->address . ':' . (string) $this->port, $this->eventLoop);
+
+			$socket->on('connection', function (Socket\ConnectionInterface $connection) {
+				$this->onSocketConnect($connection);
+			});
+
+			$socket->on('error', function (Throwable $ex) {
+				$this->onSocketError($ex);
+			});
+
 			$server->listen($socket);
 
 			if ($socket->getAddress() !== null) {
