@@ -175,11 +175,11 @@ class HttpServerCommand extends Console\Command\Command
 
 			$socket = new Socket\Server($this->address . ':' . (string) $this->port, $this->eventLoop);
 
-			$socket->on('connection', function (Socket\ConnectionInterface $connection) {
+			$socket->on('connection', function (Socket\ConnectionInterface $connection): void {
 				$this->onSocketConnect($connection);
 			});
 
-			$socket->on('error', function (Throwable $ex) {
+			$socket->on('error', function (Throwable $ex): void {
 				$this->onSocketError($ex);
 			});
 
