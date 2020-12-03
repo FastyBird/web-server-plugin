@@ -62,7 +62,7 @@ class WebServerExtension extends DI\CompilerExtension
 		$builder->addDefinition(null)
 			->setType(Http\ResponseFactory::class);
 
-		$builder->addDefinition(null)
+		$builder->addDefinition('react.eventLoop')
 			->setType(EventLoop\LoopInterface::class)
 			->setFactory('React\EventLoop\Factory::create');
 
