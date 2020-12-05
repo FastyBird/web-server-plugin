@@ -17,6 +17,7 @@ namespace FastyBird\WebServer\Commands;
 
 use Closure;
 use FastyBird\WebServer;
+use FastyBird\WebServer\Exceptions;
 use Fig\Http\Message\StatusCodeInterface;
 use IPub\SlimRouter\Routing;
 use Nette;
@@ -193,9 +194,21 @@ class HttpServerCommand extends Console\Command\Command
 
 			$this->eventLoop->run();
 
+		} catch (Exceptions\TerminateException $ex) {
+			// Log error action reason
+			$this->logger->error('[FB:WEB_SERVER] HTTP server was forced to close', [
+				'exception' => [
+					'message' => $ex->getMessage(),
+					'code'    => $ex->getCode(),
+				],
+				'cmd'       => $this->getName(),
+			]);
+
+			$this->eventLoop->stop();
+
 		} catch (Throwable $ex) {
 			// Log error action reason
-			$this->logger->error('[FB:WEB_SERVER] Stopping HTTP server', [
+			$this->logger->error('[FB:WEB_SERVER] An error occur & stopping server', [
 				'exception' => [
 					'message' => $ex->getMessage(),
 					'code'    => $ex->getCode(),
