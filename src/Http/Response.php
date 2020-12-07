@@ -32,9 +32,17 @@ class Response extends SlimRouter\Http\Response
 	/** @var mixed[] */
 	protected $attributes = [];
 
-	public function hasAttribute(string $name): bool
+	/**
+	 * @return mixed[]
+	 */
+	public function getAttributes(): array
 	{
-		return array_key_exists($name, $this->attributes);
+		return $this->attributes;
+	}
+
+	public function getEntity(): ?AbstractEntity
+	{
+		return $this->getAttribute(ResponseAttributes::ATTR_ENTITY, null);
 	}
 
 	/**
@@ -56,12 +64,19 @@ class Response extends SlimRouter\Http\Response
 		return $this->attributes[$name];
 	}
 
-	/**
-	 * @return mixed[]
-	 */
-	public function getAttributes(): array
+	public function hasAttribute(string $name): bool
 	{
-		return $this->attributes;
+		return array_key_exists($name, $this->attributes);
+	}
+
+	/**
+	 * @param AbstractEntity $entity
+	 *
+	 * @return static
+	 */
+	public function withEntity(AbstractEntity $entity): self
+	{
+		return $this->withAttribute(ResponseAttributes::ATTR_ENTITY, $entity);
 	}
 
 	/**
@@ -76,21 +91,6 @@ class Response extends SlimRouter\Http\Response
 		$new->attributes[$name] = $value;
 
 		return $new;
-	}
-
-	public function getEntity(): ?AbstractEntity
-	{
-		return $this->getAttribute(ResponseAttributes::ATTR_ENTITY, null);
-	}
-
-	/**
-	 * @param AbstractEntity $entity
-	 *
-	 * @return static
-	 */
-	public function withEntity(AbstractEntity $entity): self
-	{
-		return $this->withAttribute(ResponseAttributes::ATTR_ENTITY, $entity);
 	}
 
 }

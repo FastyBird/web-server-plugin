@@ -38,6 +38,24 @@ class WebServerExtension extends DI\CompilerExtension
 	public const ROUTER_MIDDLEWARE_TAG = 'middleware';
 
 	/**
+	 * @param Nette\Configurator $config
+	 * @param string $extensionName
+	 *
+	 * @return void
+	 */
+	public static function register(
+		Nette\Configurator $config,
+		string $extensionName = 'fbWebServer'
+	): void {
+		$config->onCompile[] = function (
+			Nette\Configurator $config,
+			DI\Compiler $compiler
+		) use ($extensionName): void {
+			$compiler->addExtension($extensionName, new WebServerExtension());
+		};
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public function getConfigSchema(): Schema\Schema
@@ -114,24 +132,6 @@ class WebServerExtension extends DI\CompilerExtension
 				$routerService->addSetup('addMiddleware', [$builder->getDefinition($middlewareService)]);
 			}
 		}
-	}
-
-	/**
-	 * @param Nette\Configurator $config
-	 * @param string $extensionName
-	 *
-	 * @return void
-	 */
-	public static function register(
-		Nette\Configurator $config,
-		string $extensionName = 'fbWebServer'
-	): void {
-		$config->onCompile[] = function (
-			Nette\Configurator $config,
-			DI\Compiler $compiler
-		) use ($extensionName): void {
-			$compiler->addExtension($extensionName, new WebServerExtension());
-		};
 	}
 
 }
