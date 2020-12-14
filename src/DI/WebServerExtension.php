@@ -82,7 +82,7 @@ class WebServerExtension extends DI\CompilerExtension
 			->setType(Http\ResponseFactory::class);
 
 		$builder->addDefinition(null)
-			->setType(SlimRouter\Routing\Router::class);
+			->setType(Router\Router::class);
 
 		$builder->addDefinition('react.eventLoop')
 			->setType(EventLoop\LoopInterface::class)
@@ -117,9 +117,11 @@ class WebServerExtension extends DI\CompilerExtension
 
 			foreach ($routesConfigurationServices as $routesConfigurationService) {
 				if ($routesConfigurationService instanceof DI\Definitions\ServiceDefinition) {
-					$routesConfigurationService->addSetup('registerRoutes', [$routerService]);
+					$routerService->addSetup('registerRoutes', [$routesConfigurationService]);
 				}
 			}
+
+			$routerService->addSetup('injectRoutes');
 
 			/**
 			 * ROUTER MIDDLEWARE
