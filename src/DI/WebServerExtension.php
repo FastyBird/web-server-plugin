@@ -17,6 +17,7 @@ namespace FastyBird\WebServer\DI;
 
 use FastyBird\WebServer\Commands;
 use FastyBird\WebServer\Http;
+use FastyBird\WebServer\Router;
 use IPub\SlimRouter;
 use Nette;
 use Nette\DI;
@@ -80,6 +81,9 @@ class WebServerExtension extends DI\CompilerExtension
 		$builder->addDefinition(null)
 			->setType(Http\ResponseFactory::class);
 
+		$builder->addDefinition(null)
+			->setType(SlimRouter\Routing\Router::class);
+
 		$builder->addDefinition('react.eventLoop')
 			->setType(EventLoop\LoopInterface::class)
 			->setFactory('React\EventLoop\Factory::create');
@@ -99,34 +103,41 @@ class WebServerExtension extends DI\CompilerExtension
 
 		$builder = $this->getContainerBuilder();
 
-		/**
-		 * ROUTER MIDDLEWARE
-		 */
-
-		if ($builder->getByType(SlimRouter\Routing\IRouter::class) === null) {
-			$builder->addDefinition(null)
-				->setType(SlimRouter\Routing\Router::class);
-		}
-
-		$middlewareServices = $builder->findByTag(self::ROUTER_MIDDLEWARE_TAG);
-
-		// Sort by priority
-		uasort($middlewareServices, function (array $a, array $b): int {
-			$p1 = $a['priority'] ?? 10;
-			$p2 = $b['priority'] ?? 10;
-
-			if ($p1 === $p2) {
-				return 0;
-			}
-
-			return ($p1 < $p2) ? -1 : 1;
-		});
-
 		$routerServiceName = $builder->getByType(SlimRouter\Routing\IRouter::class, true);
 
 		if ($routerServiceName !== null) {
 			$routerService = $builder->getDefinition($routerServiceName);
 			assert($routerService instanceof DI\Definitions\ServiceDefinition);
+
+			/**
+			 * ROUTES
+			 */
+
+			$routesConfigurationServices = $builder->findByType(Router\IRoutes::class);
+
+			foreach ($routesConfigurationServices as $routesConfigurationService) {
+				if ($routesConfigurationService instanceof DI\Definitions\ServiceDefinition) {
+					$routesConfigurationService->addSetup('registerRoutes', [$routerService]);
+				}
+			}
+
+			/**
+			 * ROUTER MIDDLEWARE
+			 */
+
+			$middlewareServices = $builder->findByTag(self::ROUTER_MIDDLEWARE_TAG);
+
+			// Sort by priority
+			uasort($middlewareServices, function (array $a, array $b): int {
+				$p1 = $a['priority'] ?? 10;
+				$p2 = $b['priority'] ?? 10;
+
+				if ($p1 === $p2) {
+					return 0;
+				}
+
+				return ($p1 < $p2) ? -1 : 1;
+			});
 
 			foreach ($middlewareServices as $middlewareService => $middlewareServiceTags) {
 				$routerService->addSetup('addMiddleware', [$builder->getDefinition($middlewareService)]);
