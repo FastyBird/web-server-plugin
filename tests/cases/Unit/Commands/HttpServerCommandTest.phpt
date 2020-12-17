@@ -36,7 +36,7 @@ final class HttpServerCommandTest extends BaseMockeryTestCase
 			->withArgs(['[FB:WEB_SERVER] Starting HTTP server'])
 			->times(1)
 			->getMock()
-			->shouldReceive('debug')
+			->shouldReceive('info')
 			->withArgs(['[FB:WEB_SERVER] Listening on "http://127.0.0.1:8001"'])
 			->times(1);
 
@@ -79,7 +79,7 @@ final class HttpServerCommandTest extends BaseMockeryTestCase
 			->withArgs(['[FB:WEB_SERVER] Starting HTTP server'])
 			->times(1)
 			->getMock()
-			->shouldReceive('debug')
+			->shouldReceive('info')
 			->withArgs(['[FB:WEB_SERVER] Listening on "http://127.0.0.1:8002"'])
 			->times(1);
 

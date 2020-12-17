@@ -31,7 +31,7 @@ class Router extends SlimRouter\Routing\Router
 {
 
 	/** @var SplObjectStorage */
-	private $routes;
+	private SplObjectStorage $routes;
 
 	public function __construct(
 		?ResponseFactoryInterface $responseFactory = null,

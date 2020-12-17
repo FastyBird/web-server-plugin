@@ -42,7 +42,7 @@ use Throwable;
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
  * @method onBeforeServerStart()
- * @method onServerStart()
+ * @method onAfterServerStart()
  * @method onRequest(ServerRequestInterface $request)
  * @method onResponse(ServerRequestInterface $request, ResponseInterface $response)
  * @method onSocketConnect(Socket\ConnectionInterface $connection)
@@ -54,37 +54,37 @@ class HttpServerCommand extends Console\Command\Command
 	use Nette\SmartObject;
 
 	/** @var Closure[] */
-	public $onBeforeServerStart = [];
+	public array $onBeforeServerStart = [];
 
 	/** @var Closure[] */
-	public $onServerStart = [];
+	public array $onAfterServerStart = [];
 
 	/** @var Closure[] */
-	public $onRequest = [];
+	public array $onRequest = [];
 
 	/** @var Closure[] */
-	public $onResponse = [];
+	public array $onResponse = [];
 
 	/** @var Closure[] */
-	public $onSocketConnect = [];
+	public array $onSocketConnect = [];
 
 	/** @var Closure[] */
-	public $onSocketError = [];
-
-	/** @var Routing\IRouter */
-	private $router;
-
-	/** @var Log\LoggerInterface */
-	private $logger;
-
-	/** @var EventLoop\LoopInterface */
-	private $eventLoop;
+	public array $onSocketError = [];
 
 	/** @var string */
-	private $address;
+	private string $address;
 
 	/** @var int */
-	private $port;
+	private int $port;
+
+	/** @var Routing\IRouter */
+	private Routing\IRouter $router;
+
+	/** @var Log\LoggerInterface */
+	private Log\LoggerInterface $logger;
+
+	/** @var EventLoop\LoopInterface */
+	private EventLoop\LoopInterface $eventLoop;
 
 	/**
 	 * @param EventLoop\LoopInterface $eventLoop
@@ -187,10 +187,10 @@ class HttpServerCommand extends Console\Command\Command
 			$server->listen($socket);
 
 			if ($socket->getAddress() !== null) {
-				$this->logger->debug(sprintf('[FB:WEB_SERVER] Listening on "%s"', str_replace('tcp:', 'http:', $socket->getAddress())));
+				$this->logger->info(sprintf('[FB:WEB_SERVER] Listening on "%s"', str_replace('tcp:', 'http:', $socket->getAddress())));
 			}
 
-			$this->onServerStart();
+			$this->onAfterServerStart();
 
 			$this->eventLoop->run();
 

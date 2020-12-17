@@ -30,7 +30,7 @@ class Response extends SlimRouter\Http\Response
 {
 
 	/** @var mixed[] */
-	protected $attributes = [];
+	protected array $attributes = [];
 
 	/**
 	 * @return mixed[]
