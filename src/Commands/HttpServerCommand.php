@@ -15,13 +15,13 @@
 
 namespace FastyBird\WebServer\Commands;
 
-use Closure;
+use FastyBird\ApplicationEvents\Events as ApplicationEventsEvents;
 use FastyBird\WebServer;
 use FastyBird\WebServer\Exceptions;
 use Fig\Http\Message\StatusCodeInterface;
 use IPub\SlimRouter\Routing;
 use Nette;
-use Psr\Http\Message\ResponseInterface;
+use Psr\EventDispatcher;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log;
 use React\EventLoop;
@@ -40,45 +40,17 @@ use Throwable;
  * @subpackage     Commands
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- *
- * @method onBeforeServerStart()
- * @method onAfterServerStart()
- * @method onRequest(ServerRequestInterface $request)
- * @method onResponse(ServerRequestInterface $request, ResponseInterface $response)
- * @method onSocketConnect(Socket\ConnectionInterface $connection)
- * @method onSocketError(Throwable $ex)
  */
 class HttpServerCommand extends Console\Command\Command
 {
 
 	use Nette\SmartObject;
 
-	/** @var Closure[] */
-	public array $onBeforeServerStart = [];
-
-	/** @var Closure[] */
-	public array $onAfterServerStart = [];
-
-	/** @var Closure[] */
-	public array $onRequest = [];
-
-	/** @var Closure[] */
-	public array $onResponse = [];
-
-	/** @var Closure[] */
-	public array $onSocketConnect = [];
-
-	/** @var Closure[] */
-	public array $onSocketError = [];
-
-	/** @var string */
-	private string $address;
-
-	/** @var int */
-	private int $port;
-
 	/** @var Routing\IRouter */
 	private Routing\IRouter $router;
+
+	/** @var EventDispatcher\EventDispatcherInterface */
+	private EventDispatcher\EventDispatcherInterface $dispatcher;
 
 	/** @var Log\LoggerInterface */
 	private Log\LoggerInterface $logger;
@@ -86,31 +58,33 @@ class HttpServerCommand extends Console\Command\Command
 	/** @var EventLoop\LoopInterface */
 	private EventLoop\LoopInterface $eventLoop;
 
+	/** @var Socket\Server */
+	private Socket\Server $socketServer;
+
 	/**
+	 * @param Socket\Server $socketServer
 	 * @param EventLoop\LoopInterface $eventLoop
 	 * @param Routing\IRouter $router
-	 * @param string $address
-	 * @param int $port
+	 * @param EventDispatcher\EventDispatcherInterface $dispatcher
 	 * @param Log\LoggerInterface|null $logger
 	 * @param string|null $name
 	 */
 	public function __construct(
+		Socket\Server $socketServer,
 		EventLoop\LoopInterface $eventLoop,
 		Routing\IRouter $router,
-		string $address = '127.0.0.1',
-		int $port = 8000,
+		EventDispatcher\EventDispatcherInterface $dispatcher,
 		?Log\LoggerInterface $logger = null,
 		?string $name = null
 	) {
 		parent::__construct($name);
 
 		$this->router = $router;
+		$this->dispatcher = $dispatcher;
 		$this->logger = $logger ?? new Log\NullLogger();
 
+		$this->socketServer = $socketServer;
 		$this->eventLoop = $eventLoop;
-
-		$this->address = $address;
-		$this->port = $port;
 	}
 
 	/**
@@ -139,16 +113,16 @@ class HttpServerCommand extends Console\Command\Command
 		 */
 
 		try {
-			$this->onBeforeServerStart();
+			$this->dispatcher->dispatch(new ApplicationEventsEvents\StartupEvent());
 
 			$server = new Http\Server($this->eventLoop, function (ServerRequestInterface $request): Promise\Promise {
 				return new Promise\Promise(function ($resolve) use ($request): void {
 					try {
-						$this->onRequest($request);
+						$this->dispatcher->dispatch(new ApplicationEventsEvents\RequestEvent($request));
 
 						$response = $this->router->handle($request);
 
-						$this->onResponse($request, $response);
+						$this->dispatcher->dispatch(new ApplicationEventsEvents\ResponseEvent($request, $response));
 
 						$resolve($response);
 
@@ -174,23 +148,11 @@ class HttpServerCommand extends Console\Command\Command
 				});
 			});
 
-			$socket = new Socket\Server($this->address . ':' . (string) $this->port, $this->eventLoop);
+			$server->listen($this->socketServer);
 
-			$socket->on('connection', function (Socket\ConnectionInterface $connection): void {
-				$this->onSocketConnect($connection);
-			});
-
-			$socket->on('error', function (Throwable $ex): void {
-				$this->onSocketError($ex);
-			});
-
-			$server->listen($socket);
-
-			if ($socket->getAddress() !== null) {
-				$this->logger->info(sprintf('[FB:WEB_SERVER] Listening on "%s"', str_replace('tcp:', 'http:', $socket->getAddress())));
+			if ($this->socketServer->getAddress() !== null) {
+				$this->logger->info(sprintf('[FB:WEB_SERVER] Listening on "%s"', str_replace('tcp:', 'http:', $this->socketServer->getAddress())));
 			}
-
-			$this->onAfterServerStart();
 
 			$this->eventLoop->run();
 
@@ -207,6 +169,7 @@ class HttpServerCommand extends Console\Command\Command
 			$this->eventLoop->stop();
 
 		} catch (Throwable $ex) {
+			var_dump($ex->getMessage());
 			// Log error action reason
 			$this->logger->error('[FB:WEB_SERVER] An error occur & stopping server', [
 				'exception' => [

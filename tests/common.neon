@@ -15,6 +15,7 @@ php:
 
 extensions:
 	contributteConsole	: Contributte\Console\DI\ConsoleExtension(%consoleMode%)
+	contributteEvents	: Contributte\EventDispatcher\DI\EventDispatcherExtension
 
 contributteConsole:
 	name: FastyBird:WebServer!

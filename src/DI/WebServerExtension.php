@@ -23,6 +23,7 @@ use Nette;
 use Nette\DI;
 use Nette\Schema;
 use React\EventLoop;
+use React\Socket;
 use stdClass;
 
 /**
@@ -78,20 +79,23 @@ class WebServerExtension extends DI\CompilerExtension
 		/** @var stdClass $configuration */
 		$configuration = $this->getConfig();
 
-		$builder->addDefinition(null)
+		$builder->addDefinition($this->prefix('routing.responseFactory'))
 			->setType(Http\ResponseFactory::class);
 
-		$builder->addDefinition(null)
+		$builder->addDefinition($this->prefix('routing.router'))
 			->setType(Router\Router::class);
 
 		$builder->addDefinition('react.eventLoop')
 			->setType(EventLoop\LoopInterface::class)
 			->setFactory('React\EventLoop\Factory::create');
 
-		$builder->addDefinition(null)
-			->setType(Commands\HttpServerCommand::class)
-			->setArgument('address', $configuration->server->address)
-			->setArgument('port', $configuration->server->port);
+		$builder->addDefinition('react.socketServer')
+			->setType(Socket\Server::class)
+			->setArgument('uri', $configuration->server->address . ':' . $configuration->server->port)
+			->setArgument('loop', '@react.eventLoop');
+
+		$builder->addDefinition($this->prefix('command.server'))
+			->setType(Commands\HttpServerCommand::class);
 	}
 
 	/**

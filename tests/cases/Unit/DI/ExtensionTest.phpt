@@ -5,6 +5,7 @@ namespace Tests\Cases;
 use FastyBird\WebServer\Commands;
 use FastyBird\WebServer\Http;
 use React\EventLoop;
+use React\Socket;
 use Tester\Assert;
 
 require_once __DIR__ . '/../../../bootstrap.php';
@@ -25,6 +26,7 @@ final class ExtensionTest extends BaseTestCase
 		Assert::notNull($container->getByType(Http\ResponseFactory::class));
 
 		Assert::notNull($container->getByType(EventLoop\LoopInterface::class));
+		Assert::notNull($container->getByType(Socket\Server::class));
 	}
 
 }

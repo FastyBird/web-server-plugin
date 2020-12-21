@@ -6,9 +6,11 @@ use FastyBird\WebServer\Commands;
 use IPub\SlimRouter;
 use Mockery;
 use Ninjify\Nunjuck\TestCase\BaseMockeryTestCase;
+use Psr\EventDispatcher;
 use Psr\Log;
 use React\EventLoop;
 use React\Promise;
+use React\Socket;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use Tester\Assert;
@@ -40,6 +42,13 @@ final class HttpServerCommandTest extends BaseMockeryTestCase
 			->withArgs(['[FB:WEB_SERVER] Listening on "http://127.0.0.1:8001"'])
 			->times(1);
 
+		$socketServer = Mockery::mock(Socket\Server::class);
+		$socketServer
+			->shouldReceive('getAddress')
+			->andReturn('http://127.0.0.1:8001')
+			->getMock()
+			->shouldReceive('on');
+
 		$eventLoop = Mockery::mock(EventLoop\LoopInterface::class);
 		$eventLoop
 			->shouldReceive('addReadStream')
@@ -47,12 +56,16 @@ final class HttpServerCommandTest extends BaseMockeryTestCase
 			->shouldReceive('run')
 			->withNoArgs();
 
+		$eventDispatcher = Mockery::mock(EventDispatcher\EventDispatcherInterface::class);
+		$eventDispatcher
+			->shouldReceive('dispatch');
+
 		$application = new Application();
 		$application->add(new Commands\HttpServerCommand(
+			$socketServer,
 			$eventLoop,
 			$router,
-			'127.0.0.1',
-			8001,
+			$eventDispatcher,
 			$logger
 		));
 
@@ -83,6 +96,13 @@ final class HttpServerCommandTest extends BaseMockeryTestCase
 			->withArgs(['[FB:WEB_SERVER] Listening on "http://127.0.0.1:8002"'])
 			->times(1);
 
+		$socketServer = Mockery::mock(Socket\Server::class);
+		$socketServer
+			->shouldReceive('getAddress')
+			->andReturn('http://127.0.0.1:8002')
+			->getMock()
+			->shouldReceive('on');
+
 		$eventLoop = Mockery::mock(EventLoop\LoopInterface::class);
 		$eventLoop
 			->shouldReceive('addReadStream')
@@ -90,12 +110,16 @@ final class HttpServerCommandTest extends BaseMockeryTestCase
 			->shouldReceive('run')
 			->withNoArgs();
 
+		$eventDispatcher = Mockery::mock(EventDispatcher\EventDispatcherInterface::class);
+		$eventDispatcher
+			->shouldReceive('dispatch');
+
 		$application = new Application();
 		$application->add(new Commands\HttpServerCommand(
+			$socketServer,
 			$eventLoop,
 			$router,
-			'127.0.0.1',
-			8002,
+			$eventDispatcher,
 			$logger
 		));
 
