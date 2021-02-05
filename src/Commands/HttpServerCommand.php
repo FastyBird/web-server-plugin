@@ -169,7 +169,6 @@ class HttpServerCommand extends Console\Command\Command
 			$this->eventLoop->stop();
 
 		} catch (Throwable $ex) {
-			var_dump($ex->getMessage());
 			// Log error action reason
 			$this->logger->error('[FB:WEB_SERVER] An error occur & stopping server', [
 				'exception' => [
