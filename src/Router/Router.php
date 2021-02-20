@@ -30,7 +30,7 @@ use SplObjectStorage;
 class Router extends SlimRouter\Routing\Router
 {
 
-	/** @var SplObjectStorage */
+	/** @var SplObjectStorage<IRoutes, null> */
 	private SplObjectStorage $routes;
 
 	public function __construct(
@@ -62,9 +62,7 @@ class Router extends SlimRouter\Routing\Router
 		$this->routes->rewind();
 
 		foreach ($this->routes as $routes) {
-			if ($routes instanceof IRoutes) {
-				$routes->registerRoutes($this);
-			}
+			$routes->registerRoutes($this);
 		}
 	}
 
