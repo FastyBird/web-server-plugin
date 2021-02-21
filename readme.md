@@ -1,6 +1,6 @@
 # FastyBird web server library
 
-[![Build Status](https://badgen.net/github/checks/FastyBird/web-server/master?cache=300&style=flast-square)](https://travis-ci.com/FastyBird/web-server)
+[![Build Status](https://badgen.net/github/checks/FastyBird/web-server/master?cache=300&style=flast-square)](https://github.com/FastyBird/web-server/actions)
 [![Code coverage](https://badgen.net/coveralls/c/github/FastyBird/web-server?cache=300&style=flast-square)](https://coveralls.io/r/FastyBird/web-server)
 ![PHP](https://badgen.net/packagist/php/FastyBird/web-server?cache=300&style=flast-square)
 [![Licence](https://badgen.net/packagist/license/FastyBird/web-server?cache=300&style=flast-square)](https://packagist.org/packages/FastyBird/web-server)
