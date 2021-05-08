@@ -3,8 +3,7 @@
 namespace Tests\Cases;
 
 use FastyBird\WebServer\Commands;
-use FastyBird\WebServer\StaticFiles;
-use IPub\SlimRouter;
+use FastyBird\WebServer\Middlewares;
 use Mockery;
 use Ninjify\Nunjuck\TestCase\BaseMockeryTestCase;
 use Psr\EventDispatcher;
@@ -30,8 +29,6 @@ final class HttpServerCommandTest extends BaseMockeryTestCase
 		$promise
 			->shouldReceive('then')
 			->andReturn($promise);
-
-		$router = Mockery::mock(SlimRouter\Routing\IRouter::class);
 
 		$logger = Mockery::mock(Log\LoggerInterface::class);
 		$logger
@@ -61,14 +58,16 @@ final class HttpServerCommandTest extends BaseMockeryTestCase
 		$eventDispatcher
 			->shouldReceive('dispatch');
 
-		$staticFilesController = Mockery::mock(StaticFiles\Controller::class);
+		$staticFilesMiddleware = Mockery::mock(Middlewares\StaticFilesMiddleware::class);
+
+		$routerMiddleware = Mockery::mock(Middlewares\RouterMiddleware::class);
 
 		$application = new Application();
 		$application->add(new Commands\HttpServerCommand(
+			$staticFilesMiddleware,
+			$routerMiddleware,
 			$socketServer,
 			$eventLoop,
-			$router,
-			$staticFilesController,
 			$eventDispatcher,
 			$logger
 		));
@@ -87,8 +86,6 @@ final class HttpServerCommandTest extends BaseMockeryTestCase
 		$promise
 			->shouldReceive('then')
 			->andReturn($promise);
-
-		$router = Mockery::mock(SlimRouter\Routing\IRouter::class);
 
 		$logger = Mockery::mock(Log\LoggerInterface::class);
 		$logger
@@ -118,14 +115,16 @@ final class HttpServerCommandTest extends BaseMockeryTestCase
 		$eventDispatcher
 			->shouldReceive('dispatch');
 
-		$staticFilesController = Mockery::mock(StaticFiles\Controller::class);
+		$staticFilesMiddleware = Mockery::mock(Middlewares\StaticFilesMiddleware::class);
+
+		$routerMiddleware = Mockery::mock(Middlewares\RouterMiddleware::class);
 
 		$application = new Application();
 		$application->add(new Commands\HttpServerCommand(
+			$staticFilesMiddleware,
+			$routerMiddleware,
 			$socketServer,
 			$eventLoop,
-			$router,
-			$staticFilesController,
 			$eventDispatcher,
 			$logger
 		));

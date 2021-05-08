@@ -41,7 +41,6 @@
     "nette/bootstrap": "^3.0",
     "nette/di": "^3.0",
     "psr/log": "^1.1",
-    "react/filesystem": "^0.1.2",
     "react/http": "^1.0"
   },
 

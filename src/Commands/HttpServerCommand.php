@@ -16,23 +16,19 @@
 namespace FastyBird\WebServer\Commands;
 
 use FastyBird\ApplicationEvents\Events as ApplicationEventsEvents;
-use FastyBird\WebServer;
 use FastyBird\WebServer\Exceptions;
-use FastyBird\WebServer\StaticFiles;
-use Fig\Http\Message\StatusCodeInterface;
-use IPub\SlimRouter\Routing;
+use FastyBird\WebServer\Middlewares;
 use Nette;
 use Psr\EventDispatcher;
-use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log;
 use React\EventLoop;
 use React\Http;
-use React\Promise;
 use React\Socket;
 use Symfony\Component\Console;
 use Symfony\Component\Console\Input;
 use Symfony\Component\Console\Output;
 use Throwable;
+use Tracy\Debugger;
 
 /**
  * HTTP server command
@@ -47,11 +43,11 @@ class HttpServerCommand extends Console\Command\Command
 
 	use Nette\SmartObject;
 
-	/** @var Routing\IRouter */
-	private Routing\IRouter $router;
+	/** @var Middlewares\StaticFilesMiddleware */
+	private Middlewares\StaticFilesMiddleware $staticFilesMiddleware;
 
-	/** @var StaticFiles\Controller */
-	private StaticFiles\Controller $staticFilesController;
+	/** @var Middlewares\RouterMiddleware */
+	private Middlewares\RouterMiddleware $routerMiddleware;
 
 	/** @var EventDispatcher\EventDispatcherInterface */
 	private EventDispatcher\EventDispatcherInterface $dispatcher;
@@ -66,26 +62,28 @@ class HttpServerCommand extends Console\Command\Command
 	private Socket\Server $socketServer;
 
 	/**
+	 * @param Middlewares\StaticFilesMiddleware $staticFilesMiddleware
+	 * @param Middlewares\RouterMiddleware $routerMiddleware
 	 * @param Socket\Server $socketServer
 	 * @param EventLoop\LoopInterface $eventLoop
-	 * @param Routing\IRouter $router
 	 * @param EventDispatcher\EventDispatcherInterface $dispatcher
 	 * @param Log\LoggerInterface|null $logger
 	 * @param string|null $name
 	 */
 	public function __construct(
+		Middlewares\StaticFilesMiddleware $staticFilesMiddleware,
+		Middlewares\RouterMiddleware $routerMiddleware,
 		Socket\Server $socketServer,
 		EventLoop\LoopInterface $eventLoop,
-		Routing\IRouter $router,
-		StaticFiles\Controller $staticFilesController,
 		EventDispatcher\EventDispatcherInterface $dispatcher,
 		?Log\LoggerInterface $logger = null,
 		?string $name = null
 	) {
 		parent::__construct($name);
 
-		$this->router = $router;
-		$this->staticFilesController = $staticFilesController;
+		$this->staticFilesMiddleware = $staticFilesMiddleware;
+		$this->routerMiddleware = $routerMiddleware;
+
 		$this->dispatcher = $dispatcher;
 		$this->logger = $logger ?? new Log\NullLogger();
 
@@ -121,66 +119,24 @@ class HttpServerCommand extends Console\Command\Command
 		try {
 			$this->dispatcher->dispatch(new ApplicationEventsEvents\StartupEvent());
 
-			$server = new Http\Server($this->eventLoop, function (ServerRequestInterface $request): Promise\Promise {
-				return new Promise\Promise(
-					function () use ($request): Promise\PromiseInterface {
-						return ($this->staticFilesController)($request);
-					},
-					function (Throwable $ex) use ($request): Promise\PromiseInterface {
-						if ($ex instanceof Exceptions\FileNotFoundException) {
-							return new Promise\Promise(function ($resolve) use ($request): void {
-								try {
-									$this->dispatcher->dispatch(new ApplicationEventsEvents\RequestEvent($request));
+			$server = new Http\Server(
+				$this->eventLoop,
+				$this->staticFilesMiddleware,
+				$this->routerMiddleware
+			);
 
-									$response = $this->router->handle($request);
+			$server->on('error', function (Throwable $ex): void {
+				// Log error action reason
+				$this->logger->error('[FB:WEB_SERVER] Stopping HTTP server', [
+					'exception' => [
+						'message' => $ex->getMessage(),
+						'code'    => $ex->getCode(),
+					],
+					'cmd'       => $this->getName(),
+				]);
+				Debugger::log($ex);
 
-									$this->dispatcher->dispatch(new ApplicationEventsEvents\ResponseEvent($request, $response));
-
-									$resolve($response);
-
-								} catch (Throwable $ex) {
-									// Log error action reason
-									$this->logger->error('[FB:WEB_SERVER] Stopping HTTP server', [
-										'exception' => [
-											'message' => $ex->getMessage(),
-											'code'    => $ex->getCode(),
-										],
-										'cmd'       => $this->getName(),
-									]);
-
-									$this->eventLoop->stop();
-								}
-
-								$response = WebServer\Http\Response::text(
-									'Server error',
-									StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR
-								);
-
-								$resolve($response);
-							});
-						}
-
-						return new Promise\Promise(function ($resolve) use ($ex): void {
-							// Log error action reason
-							$this->logger->error('[FB:WEB_SERVER] Stopping HTTP server', [
-								'exception' => [
-									'message' => $ex->getMessage(),
-									'code'    => $ex->getCode(),
-								],
-								'cmd'       => $this->getName(),
-							]);
-
-							$this->eventLoop->stop();
-
-							$response = WebServer\Http\Response::text(
-								'Server error',
-								StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR
-							);
-
-							$resolve($response);
-						});
-					}
-				);
+				$this->eventLoop->stop();
 			});
 
 			$server->listen($this->socketServer);
