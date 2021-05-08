@@ -4,6 +4,7 @@ namespace Tests\Cases;
 
 use FastyBird\WebServer\Commands;
 use FastyBird\WebServer\Http;
+use FastyBird\WebServer\StaticFiles;
 use React\EventLoop;
 use React\Socket;
 use Tester\Assert;
@@ -27,6 +28,9 @@ final class ExtensionTest extends BaseTestCase
 
 		Assert::notNull($container->getByType(EventLoop\LoopInterface::class));
 		Assert::notNull($container->getByType(Socket\Server::class));
+
+		Assert::notNull($container->getByType(StaticFiles\Controller::class));
+		Assert::notNull($container->getByType(StaticFiles\Webroot::class));
 	}
 
 }

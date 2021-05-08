@@ -18,11 +18,13 @@ namespace FastyBird\WebServer\DI;
 use FastyBird\WebServer\Commands;
 use FastyBird\WebServer\Http;
 use FastyBird\WebServer\Router;
+use FastyBird\WebServer\StaticFiles;
 use IPub\SlimRouter;
 use Nette;
 use Nette\DI;
 use Nette\Schema;
 use React\EventLoop;
+use React\Filesystem;
 use React\Socket;
 use stdClass;
 
@@ -67,6 +69,9 @@ class WebServerExtension extends DI\CompilerExtension
 				'address' => Schema\Expect::string('127.0.0.1'),
 				'port'    => Schema\Expect::int(8000),
 			]),
+			'static' => Schema\Expect::structure([
+				'webroot' => Schema\Expect::string(),
+			]),
 		]);
 	}
 
@@ -96,6 +101,18 @@ class WebServerExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('command.server'))
 			->setType(Commands\HttpServerCommand::class);
+
+		// Webserver static files
+		$builder->addDefinition($this->prefix('static.controller'))
+			->setType(StaticFiles\Controller::class);
+
+		$builder->addDefinition($this->prefix('static.filesystem'))
+			->setType(Filesystem\FilesystemInterface::class)
+			->setFactory('React\Filesystem\Filesystem::create', ['loop' => '@react.eventLoop']);
+
+		$builder->addDefinition($this->prefix('static.webroot'))
+			->setType(StaticFiles\Webroot::class)
+			->setArgument('publicRoot', $configuration->static->webroot);
 	}
 
 	/**

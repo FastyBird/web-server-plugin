@@ -18,6 +18,7 @@ namespace FastyBird\WebServer\Commands;
 use FastyBird\ApplicationEvents\Events as ApplicationEventsEvents;
 use FastyBird\WebServer;
 use FastyBird\WebServer\Exceptions;
+use FastyBird\WebServer\StaticFiles;
 use Fig\Http\Message\StatusCodeInterface;
 use IPub\SlimRouter\Routing;
 use Nette;
@@ -49,6 +50,9 @@ class HttpServerCommand extends Console\Command\Command
 	/** @var Routing\IRouter */
 	private Routing\IRouter $router;
 
+	/** @var StaticFiles\Controller */
+	private StaticFiles\Controller $staticFilesController;
+
 	/** @var EventDispatcher\EventDispatcherInterface */
 	private EventDispatcher\EventDispatcherInterface $dispatcher;
 
@@ -73,6 +77,7 @@ class HttpServerCommand extends Console\Command\Command
 		Socket\Server $socketServer,
 		EventLoop\LoopInterface $eventLoop,
 		Routing\IRouter $router,
+		StaticFiles\Controller $staticFilesController,
 		EventDispatcher\EventDispatcherInterface $dispatcher,
 		?Log\LoggerInterface $logger = null,
 		?string $name = null
@@ -80,6 +85,7 @@ class HttpServerCommand extends Console\Command\Command
 		parent::__construct($name);
 
 		$this->router = $router;
+		$this->staticFilesController = $staticFilesController;
 		$this->dispatcher = $dispatcher;
 		$this->logger = $logger ?? new Log\NullLogger();
 
@@ -116,36 +122,65 @@ class HttpServerCommand extends Console\Command\Command
 			$this->dispatcher->dispatch(new ApplicationEventsEvents\StartupEvent());
 
 			$server = new Http\Server($this->eventLoop, function (ServerRequestInterface $request): Promise\Promise {
-				return new Promise\Promise(function ($resolve) use ($request): void {
-					try {
-						$this->dispatcher->dispatch(new ApplicationEventsEvents\RequestEvent($request));
+				return new Promise\Promise(
+					function () use ($request): Promise\PromiseInterface {
+						return ($this->staticFilesController)($request);
+					},
+					function (Throwable $ex) use ($request): Promise\PromiseInterface {
+						if ($ex instanceof Exceptions\FileNotFoundException) {
+							return new Promise\Promise(function ($resolve) use ($request): void {
+								try {
+									$this->dispatcher->dispatch(new ApplicationEventsEvents\RequestEvent($request));
 
-						$response = $this->router->handle($request);
+									$response = $this->router->handle($request);
 
-						$this->dispatcher->dispatch(new ApplicationEventsEvents\ResponseEvent($request, $response));
+									$this->dispatcher->dispatch(new ApplicationEventsEvents\ResponseEvent($request, $response));
 
-						$resolve($response);
+									$resolve($response);
 
-					} catch (Throwable $ex) {
-						// Log error action reason
-						$this->logger->error('[FB:WEB_SERVER] Stopping HTTP server', [
-							'exception' => [
-								'message' => $ex->getMessage(),
-								'code'    => $ex->getCode(),
-							],
-							'cmd'       => $this->getName(),
-						]);
+								} catch (Throwable $ex) {
+									// Log error action reason
+									$this->logger->error('[FB:WEB_SERVER] Stopping HTTP server', [
+										'exception' => [
+											'message' => $ex->getMessage(),
+											'code'    => $ex->getCode(),
+										],
+										'cmd'       => $this->getName(),
+									]);
 
-						$this->eventLoop->stop();
+									$this->eventLoop->stop();
+								}
+
+								$response = WebServer\Http\Response::text(
+									'Server error',
+									StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR
+								);
+
+								$resolve($response);
+							});
+						}
+
+						return new Promise\Promise(function ($resolve) use ($ex): void {
+							// Log error action reason
+							$this->logger->error('[FB:WEB_SERVER] Stopping HTTP server', [
+								'exception' => [
+									'message' => $ex->getMessage(),
+									'code'    => $ex->getCode(),
+								],
+								'cmd'       => $this->getName(),
+							]);
+
+							$this->eventLoop->stop();
+
+							$response = WebServer\Http\Response::text(
+								'Server error',
+								StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR
+							);
+
+							$resolve($response);
+						});
 					}
-
-					$response = WebServer\Http\Response::text(
-						'Server error',
-						StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR
-					);
-
-					$resolve($response);
-				});
+				);
 			});
 
 			$server->listen($this->socketServer);

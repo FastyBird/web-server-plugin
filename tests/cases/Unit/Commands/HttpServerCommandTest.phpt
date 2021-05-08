@@ -3,6 +3,7 @@
 namespace Tests\Cases;
 
 use FastyBird\WebServer\Commands;
+use FastyBird\WebServer\StaticFiles;
 use IPub\SlimRouter;
 use Mockery;
 use Ninjify\Nunjuck\TestCase\BaseMockeryTestCase;
@@ -60,11 +61,14 @@ final class HttpServerCommandTest extends BaseMockeryTestCase
 		$eventDispatcher
 			->shouldReceive('dispatch');
 
+		$staticFilesController = Mockery::mock(StaticFiles\Controller::class);
+
 		$application = new Application();
 		$application->add(new Commands\HttpServerCommand(
 			$socketServer,
 			$eventLoop,
 			$router,
+			$staticFilesController,
 			$eventDispatcher,
 			$logger
 		));
@@ -114,11 +118,14 @@ final class HttpServerCommandTest extends BaseMockeryTestCase
 		$eventDispatcher
 			->shouldReceive('dispatch');
 
+		$staticFilesController = Mockery::mock(StaticFiles\Controller::class);
+
 		$application = new Application();
 		$application->add(new Commands\HttpServerCommand(
 			$socketServer,
 			$eventLoop,
 			$router,
+			$staticFilesController,
 			$eventDispatcher,
 			$logger
 		));
