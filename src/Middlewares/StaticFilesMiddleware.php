@@ -52,21 +52,26 @@ final class StaticFilesMiddleware
 			return $next($request);
 		}
 
-		$filePath = $request->getUri()->getPath();
-		$filePath = $filePath === '/' ? '/index.html' : $filePath;
+		$files = [
+			$request->getUri()->getPath(),
+			$request->getUri()->getPath() . '/index.html',
+			$request->getUri()->getPath() . '/index.htm',
+		];
 
-		$file = $this->publicRoot . $filePath;
+		foreach ($files as $filePath) {
+			$file = realpath($this->publicRoot . $filePath);
 
-		if (file_exists($file) && !is_dir($file)) {
-			$fileContents = file_get_contents($file);
+			if ($file !== false && file_exists($file) && !is_dir($file)) {
+				$fileContents = file_get_contents($file);
 
-			if ($fileContents === false) {
-				throw new Exceptions\FileNotFoundException('Content of requested file could not be loaded');
+				if ($fileContents === false) {
+					throw new Exceptions\FileNotFoundException('Content of requested file could not be loaded');
+				}
+
+				$mimeType = MimeType\MimeTypeFileExtensionGuesser::guess($file);
+
+				return new Response(200, ['Content-Type' => $mimeType ?? 'text/plain'], $fileContents);
 			}
-
-			$mimeType = MimeType\MimeTypeFileExtensionGuesser::guess($file);
-
-			return new Response(200, ['Content-Type' => $mimeType ?? 'text/plain'], $fileContents);
 		}
 
 		return $next($request);
