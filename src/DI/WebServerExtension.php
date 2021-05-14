@@ -24,7 +24,6 @@ use Nette;
 use Nette\DI;
 use Nette\Schema;
 use React\EventLoop;
-use React\Socket;
 use stdClass;
 
 /**
@@ -65,8 +64,9 @@ class WebServerExtension extends DI\CompilerExtension
 	{
 		return Schema\Expect::structure([
 			'server' => Schema\Expect::structure([
-				'address' => Schema\Expect::string('127.0.0.1'),
-				'port'    => Schema\Expect::int(8000),
+				'address'     => Schema\Expect::string('127.0.0.1'),
+				'port'        => Schema\Expect::int(8000),
+				'certificate' => Schema\Expect::string(null),
 			]),
 			'static' => Schema\Expect::structure([
 				'webroot' => Schema\Expect::string(),
@@ -94,13 +94,13 @@ class WebServerExtension extends DI\CompilerExtension
 			->setType(EventLoop\LoopInterface::class)
 			->setFactory('React\EventLoop\Factory::create');
 
-		$builder->addDefinition('react.socketServer')
-			->setType(Socket\Server::class)
-			->setArgument('uri', $configuration->server->address . ':' . $configuration->server->port)
-			->setArgument('loop', '@react.eventLoop');
-
 		$builder->addDefinition($this->prefix('command.server'))
-			->setType(Commands\HttpServerCommand::class);
+			->setType(Commands\HttpServerCommand::class)
+			->setArguments([
+				'serverAddress'     => $configuration->server->address,
+				'serverPort'        => $configuration->server->port,
+				'serverCertificate' => $configuration->server->certificate,
+			]);
 
 		// Webserver middlewares
 		$builder->addDefinition($this->prefix('middlewares.staticFiles'))

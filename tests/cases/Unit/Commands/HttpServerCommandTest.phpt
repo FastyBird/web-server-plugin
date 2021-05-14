@@ -10,7 +10,6 @@ use Psr\EventDispatcher;
 use Psr\Log;
 use React\EventLoop;
 use React\Promise;
-use React\Socket;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use Tester\Assert;
@@ -40,13 +39,6 @@ final class HttpServerCommandTest extends BaseMockeryTestCase
 			->withArgs(['[FB:WEB_SERVER] Listening on "http://127.0.0.1:8001"'])
 			->times(1);
 
-		$socketServer = Mockery::mock(Socket\Server::class);
-		$socketServer
-			->shouldReceive('getAddress')
-			->andReturn('http://127.0.0.1:8001')
-			->getMock()
-			->shouldReceive('on');
-
 		$eventLoop = Mockery::mock(EventLoop\LoopInterface::class);
 		$eventLoop
 			->shouldReceive('addReadStream')
@@ -56,7 +48,8 @@ final class HttpServerCommandTest extends BaseMockeryTestCase
 
 		$eventDispatcher = Mockery::mock(EventDispatcher\EventDispatcherInterface::class);
 		$eventDispatcher
-			->shouldReceive('dispatch');
+			->shouldReceive('dispatch')
+			->times(2);
 
 		$staticFilesMiddleware = Mockery::mock(Middlewares\StaticFilesMiddleware::class);
 
@@ -64,66 +57,10 @@ final class HttpServerCommandTest extends BaseMockeryTestCase
 
 		$application = new Application();
 		$application->add(new Commands\HttpServerCommand(
+			'127.0.0.1',
+			8001,
 			$staticFilesMiddleware,
 			$routerMiddleware,
-			$socketServer,
-			$eventLoop,
-			$eventDispatcher,
-			$logger
-		));
-
-		$command = $application->get('fb:web-server:start');
-
-		$commandTester = new CommandTester($command);
-		$commandTester->execute([]);
-
-		Assert::true(true);
-	}
-
-	public function testExecuteWithoutRabbit(): void
-	{
-		$promise = Mockery::mock(Promise\PromiseInterface::class);
-		$promise
-			->shouldReceive('then')
-			->andReturn($promise);
-
-		$logger = Mockery::mock(Log\LoggerInterface::class);
-		$logger
-			->shouldReceive('info')
-			->withArgs(['[FB:WEB_SERVER] Starting HTTP server'])
-			->times(1)
-			->getMock()
-			->shouldReceive('info')
-			->withArgs(['[FB:WEB_SERVER] Listening on "http://127.0.0.1:8002"'])
-			->times(1);
-
-		$socketServer = Mockery::mock(Socket\Server::class);
-		$socketServer
-			->shouldReceive('getAddress')
-			->andReturn('http://127.0.0.1:8002')
-			->getMock()
-			->shouldReceive('on');
-
-		$eventLoop = Mockery::mock(EventLoop\LoopInterface::class);
-		$eventLoop
-			->shouldReceive('addReadStream')
-			->getMock()
-			->shouldReceive('run')
-			->withNoArgs();
-
-		$eventDispatcher = Mockery::mock(EventDispatcher\EventDispatcherInterface::class);
-		$eventDispatcher
-			->shouldReceive('dispatch');
-
-		$staticFilesMiddleware = Mockery::mock(Middlewares\StaticFilesMiddleware::class);
-
-		$routerMiddleware = Mockery::mock(Middlewares\RouterMiddleware::class);
-
-		$application = new Application();
-		$application->add(new Commands\HttpServerCommand(
-			$staticFilesMiddleware,
-			$routerMiddleware,
-			$socketServer,
 			$eventLoop,
 			$eventDispatcher,
 			$logger

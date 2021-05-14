@@ -16,6 +16,7 @@
 namespace FastyBird\WebServer\Commands;
 
 use FastyBird\ApplicationEvents\Events as ApplicationEventsEvents;
+use FastyBird\WebServer\Events;
 use FastyBird\WebServer\Exceptions;
 use FastyBird\WebServer\Middlewares;
 use Nette;
@@ -43,6 +44,15 @@ class HttpServerCommand extends Console\Command\Command
 
 	use Nette\SmartObject;
 
+	/** @var string */
+	private string $serverAddress;
+
+	/** @var int */
+	private int $serverPort;
+
+	/** @var string|null */
+	private ?string $serverCertificate;
+
 	/** @var Middlewares\StaticFilesMiddleware */
 	private Middlewares\StaticFilesMiddleware $staticFilesMiddleware;
 
@@ -58,28 +68,33 @@ class HttpServerCommand extends Console\Command\Command
 	/** @var EventLoop\LoopInterface */
 	private EventLoop\LoopInterface $eventLoop;
 
-	/** @var Socket\Server */
-	private Socket\Server $socketServer;
-
 	/**
+	 * @param string $serverAddress
+	 * @param int $serverPort
+	 * @param string|null $serverCertificate
 	 * @param Middlewares\StaticFilesMiddleware $staticFilesMiddleware
 	 * @param Middlewares\RouterMiddleware $routerMiddleware
-	 * @param Socket\Server $socketServer
 	 * @param EventLoop\LoopInterface $eventLoop
 	 * @param EventDispatcher\EventDispatcherInterface $dispatcher
 	 * @param Log\LoggerInterface|null $logger
 	 * @param string|null $name
 	 */
 	public function __construct(
+		string $serverAddress,
+		int $serverPort,
 		Middlewares\StaticFilesMiddleware $staticFilesMiddleware,
 		Middlewares\RouterMiddleware $routerMiddleware,
-		Socket\Server $socketServer,
 		EventLoop\LoopInterface $eventLoop,
 		EventDispatcher\EventDispatcherInterface $dispatcher,
 		?Log\LoggerInterface $logger = null,
+		?string $serverCertificate = null,
 		?string $name = null
 	) {
 		parent::__construct($name);
+
+		$this->serverAddress = $serverAddress;
+		$this->serverPort = $serverPort;
+		$this->serverCertificate = $serverCertificate;
 
 		$this->staticFilesMiddleware = $staticFilesMiddleware;
 		$this->routerMiddleware = $routerMiddleware;
@@ -87,7 +102,6 @@ class HttpServerCommand extends Console\Command\Command
 		$this->dispatcher = $dispatcher;
 		$this->logger = $logger ?? new Log\NullLogger();
 
-		$this->socketServer = $socketServer;
 		$this->eventLoop = $eventLoop;
 	}
 
@@ -111,6 +125,20 @@ class HttpServerCommand extends Console\Command\Command
 		Output\OutputInterface $output
 	): int {
 		$this->logger->info('[FB:WEB_SERVER] Starting HTTP server');
+
+		$socketServer = new Socket\Server($this->serverAddress . ':' . $this->serverPort, $this->eventLoop);
+
+		if (
+			$this->serverCertificate !== null
+			&& is_file($this->serverCertificate)
+			&& file_exists($this->serverCertificate)
+		) {
+			$socketServer = new Socket\SecureServer($socketServer, $this->eventLoop, [
+				'local_cert' => $this->serverCertificate,
+			]);
+		}
+
+		$this->dispatcher->dispatch(new Events\InitializeEvent($socketServer));
 
 		/**
 		 * HTTP server
@@ -139,10 +167,15 @@ class HttpServerCommand extends Console\Command\Command
 				$this->eventLoop->stop();
 			});
 
-			$server->listen($this->socketServer);
+			$server->listen($socketServer);
 
-			if ($this->socketServer->getAddress() !== null) {
-				$this->logger->info(sprintf('[FB:WEB_SERVER] Listening on "%s"', str_replace('tcp:', 'http:', $this->socketServer->getAddress())));
+			if ($socketServer->getAddress() !== null) {
+				if ($socketServer instanceof Socket\SecureServer) {
+					$this->logger->info(sprintf('[FB:WEB_SERVER] Listening on "%s"', str_replace('tls:', 'https:', $socketServer->getAddress())));
+
+				} else {
+					$this->logger->info(sprintf('[FB:WEB_SERVER] Listening on "%s"', str_replace('tcp:', 'http:', $socketServer->getAddress())));
+				}
 			}
 
 			$this->eventLoop->run();
@@ -160,6 +193,7 @@ class HttpServerCommand extends Console\Command\Command
 			$this->eventLoop->stop();
 
 		} catch (Throwable $ex) {
+			var_dump($ex->getMessage());
 			// Log error action reason
 			$this->logger->error('[FB:WEB_SERVER] An error occur & stopping server', [
 				'exception' => [
