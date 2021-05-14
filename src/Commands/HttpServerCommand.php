@@ -29,7 +29,6 @@ use Symfony\Component\Console;
 use Symfony\Component\Console\Input;
 use Symfony\Component\Console\Output;
 use Throwable;
-use Tracy\Debugger;
 
 /**
  * HTTP server command
@@ -162,7 +161,6 @@ class HttpServerCommand extends Console\Command\Command
 					],
 					'cmd'       => $this->getName(),
 				]);
-				Debugger::log($ex);
 
 				$this->eventLoop->stop();
 			});

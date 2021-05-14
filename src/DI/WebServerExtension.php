@@ -66,10 +66,10 @@ class WebServerExtension extends DI\CompilerExtension
 			'server' => Schema\Expect::structure([
 				'address'     => Schema\Expect::string('127.0.0.1'),
 				'port'        => Schema\Expect::int(8000),
-				'certificate' => Schema\Expect::string(null),
+				'certificate' => Schema\Expect::string(null)->nullable(),
 			]),
 			'static' => Schema\Expect::structure([
-				'webroot' => Schema\Expect::string(),
+				'webroot' => Schema\Expect::string(null)->nullable(),
 				'enabled' => Schema\Expect::bool(false),
 			]),
 		]);
