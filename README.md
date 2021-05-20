@@ -17,7 +17,7 @@ This is a [Nette framework](https://nette.org) extension which is implementing h
 The best way to install **fastybird/web-server** is using [Composer](http://getcomposer.org/):
 
 ```sh
-$ composer require fastybird/web-server
+composer require fastybird/web-server
 ```
 
 ## Documentation
