@@ -22,8 +22,8 @@ This extension is dependent on other extensions, and they have to be registered 
 ```neon
 extensions:
     ...
-    contributteConsole : Contributte\Console\DI\ConsoleExtension(%consoleMode%)
-    contributteEvents : Contributte\EventDispatcher\DI\EventDispatcherExtension
+    contributteConsole: Contributte\Console\DI\ConsoleExtension(%consoleMode%)
+    contributteEvents: Contributte\EventDispatcher\DI\EventDispatcherExtension
 ```
 
 > For information how to configure these extensions please visit their doc pages
