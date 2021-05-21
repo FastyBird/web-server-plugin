@@ -7,13 +7,13 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:WebServer!
- * @subpackage     Middlewares
+ * @subpackage     Middleware
  * @since          0.1.0
  *
  * @date           08.05.21
  */
 
-namespace FastyBird\WebServer\Middlewares;
+namespace FastyBird\WebServer\Middleware;
 
 use FastyBird\WebServer\Exceptions;
 use Narrowspark\MimeType;
@@ -25,7 +25,7 @@ use React\Http\Message\Response;
  * Public static files middleware
  *
  * @package        FastyBird:WebServer!
- * @subpackage     Middlewares
+ * @subpackage     Middleware
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

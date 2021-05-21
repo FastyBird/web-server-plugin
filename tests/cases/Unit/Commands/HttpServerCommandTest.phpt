@@ -3,7 +3,7 @@
 namespace Tests\Cases;
 
 use FastyBird\WebServer\Commands;
-use FastyBird\WebServer\Middlewares;
+use FastyBird\WebServer\Middleware;
 use Mockery;
 use Ninjify\Nunjuck\TestCase\BaseMockeryTestCase;
 use Psr\EventDispatcher;
@@ -51,14 +51,17 @@ final class HttpServerCommandTest extends BaseMockeryTestCase
 			->shouldReceive('dispatch')
 			->times(2);
 
-		$staticFilesMiddleware = Mockery::mock(Middlewares\StaticFilesMiddleware::class);
+		$corsFilesMiddleware = Mockery::mock(Middleware\CorsMiddleware::class);
 
-		$routerMiddleware = Mockery::mock(Middlewares\RouterMiddleware::class);
+		$staticFilesMiddleware = Mockery::mock(Middleware\StaticFilesMiddleware::class);
+
+		$routerMiddleware = Mockery::mock(Middleware\RouterMiddleware::class);
 
 		$application = new Application();
 		$application->add(new Commands\HttpServerCommand(
 			'127.0.0.1',
 			8001,
+			$corsFilesMiddleware,
 			$staticFilesMiddleware,
 			$routerMiddleware,
 			$eventLoop,

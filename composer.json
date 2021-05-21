@@ -35,13 +35,16 @@
   "require" : {
     "php": ">=7.4.0",
     "contributte/console": "^0.9",
-    "fastybird/application-events": "^0.1",
+    "contributte/event-dispatcher": "^0.8.0",
     "ipub/slim-router": "^0.2",
     "narrowspark/mimetypes": "^1.6",
     "nette/bootstrap": "^3.1",
     "nette/di": "^3.0",
+    "nette/utils": "^3.2",
+    "psr/http-message": "^1.0",
     "psr/log": "^1.1",
-    "react/http": "^1.3"
+    "react/http": "^1.3",
+    "sunrise/http-server-request": "^1.1"
   },
 
   "require-dev" : {
@@ -55,6 +58,12 @@
     "phpstan/phpstan-nette" : "^0.12",
     "phpstan/phpstan-strict-rules" : "^0.12",
     "tracy/tracy" : "^2.8"
+  },
+
+  "suggest": {
+    "fastybird/json-api": "Handle request with {JSON:API} schemas",
+    "fastybird/database": "For application with Doctrine2 it will help you watch DB connection",
+    "fastybird/simple-auth": "Handle basic user authentication & authorization"
   },
 
   "autoload" : {
@@ -72,10 +81,5 @@
 
   "config" : {
     "sort-packages" : true
-  },
-
-  "bin" : [
-    "bin/fb-webserver",
-    "bin/fb-webserver.php"
-  ]
+  }
 }

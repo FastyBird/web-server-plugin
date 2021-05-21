@@ -7,15 +7,15 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:WebServer!
- * @subpackage     Middlewares
+ * @subpackage     Middleware
  * @since          0.1.0
  *
  * @date           08.05.21
  */
 
-namespace FastyBird\WebServer\Middlewares;
+namespace FastyBird\WebServer\Middleware;
 
-use FastyBird\ApplicationEvents\Events as ApplicationEventsEvents;
+use FastyBird\WebServer\Events;
 use IPub\SlimRouter\Routing;
 use Psr\EventDispatcher;
 use Psr\Http\Message\ResponseInterface;
@@ -25,7 +25,7 @@ use Psr\Http\Message\ServerRequestInterface;
  * Application router middleware
  *
  * @package        FastyBird:WebServer!
- * @subpackage     Middlewares
+ * @subpackage     Middleware
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
@@ -48,11 +48,11 @@ final class RouterMiddleware
 
 	public function __invoke(ServerRequestInterface $request): ResponseInterface
 	{
-		$this->dispatcher->dispatch(new ApplicationEventsEvents\RequestEvent($request));
+		$this->dispatcher->dispatch(new Events\RequestEvent($request));
 
 		$response = $this->router->handle($request);
 
-		$this->dispatcher->dispatch(new ApplicationEventsEvents\ResponseEvent($request, $response));
+		$this->dispatcher->dispatch(new Events\ResponseEvent($request, $response));
 
 		return $response;
 	}

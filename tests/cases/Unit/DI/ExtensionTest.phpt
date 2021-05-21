@@ -2,9 +2,10 @@
 
 namespace Tests\Cases;
 
+use FastyBird\WebServer\Application;
 use FastyBird\WebServer\Commands;
 use FastyBird\WebServer\Http;
-use FastyBird\WebServer\Middlewares;
+use FastyBird\WebServer\Middleware;
 use React\EventLoop;
 use Tester\Assert;
 
@@ -21,14 +22,18 @@ final class ExtensionTest extends BaseTestCase
 	{
 		$container = $this->createContainer();
 
+		Assert::notNull($container->getByType(Application\ConsoleApplication::class));
+		Assert::notNull($container->getByType(Application\Application::class));
+
 		Assert::notNull($container->getByType(Commands\HttpServerCommand::class));
 
 		Assert::notNull($container->getByType(Http\ResponseFactory::class));
 
 		Assert::notNull($container->getByType(EventLoop\LoopInterface::class));
 
-		Assert::notNull($container->getByType(Middlewares\StaticFilesMiddleware::class));
-		Assert::notNull($container->getByType(Middlewares\RouterMiddleware::class));
+		Assert::notNull($container->getByType(Middleware\CorsMiddleware::class));
+		Assert::notNull($container->getByType(Middleware\StaticFilesMiddleware::class));
+		Assert::notNull($container->getByType(Middleware\RouterMiddleware::class));
 	}
 
 }

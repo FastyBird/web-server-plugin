@@ -15,10 +15,9 @@
 
 namespace FastyBird\WebServer\Commands;
 
-use FastyBird\ApplicationEvents\Events as ApplicationEventsEvents;
 use FastyBird\WebServer\Events;
 use FastyBird\WebServer\Exceptions;
-use FastyBird\WebServer\Middlewares;
+use FastyBird\WebServer\Middleware;
 use Nette;
 use Psr\EventDispatcher;
 use Psr\Log;
@@ -52,11 +51,14 @@ class HttpServerCommand extends Console\Command\Command
 	/** @var string|null */
 	private ?string $serverCertificate;
 
-	/** @var Middlewares\StaticFilesMiddleware */
-	private Middlewares\StaticFilesMiddleware $staticFilesMiddleware;
+	/** @var Middleware\CorsMiddleware */
+	private Middleware\CorsMiddleware $corsMiddleware;
 
-	/** @var Middlewares\RouterMiddleware */
-	private Middlewares\RouterMiddleware $routerMiddleware;
+	/** @var Middleware\StaticFilesMiddleware */
+	private Middleware\StaticFilesMiddleware $staticFilesMiddleware;
+
+	/** @var Middleware\RouterMiddleware */
+	private Middleware\RouterMiddleware $routerMiddleware;
 
 	/** @var EventDispatcher\EventDispatcherInterface */
 	private EventDispatcher\EventDispatcherInterface $dispatcher;
@@ -71,8 +73,9 @@ class HttpServerCommand extends Console\Command\Command
 	 * @param string $serverAddress
 	 * @param int $serverPort
 	 * @param string|null $serverCertificate
-	 * @param Middlewares\StaticFilesMiddleware $staticFilesMiddleware
-	 * @param Middlewares\RouterMiddleware $routerMiddleware
+	 * @param Middleware\CorsMiddleware $corsMiddleware
+	 * @param Middleware\StaticFilesMiddleware $staticFilesMiddleware
+	 * @param Middleware\RouterMiddleware $routerMiddleware
 	 * @param EventLoop\LoopInterface $eventLoop
 	 * @param EventDispatcher\EventDispatcherInterface $dispatcher
 	 * @param Log\LoggerInterface|null $logger
@@ -81,8 +84,9 @@ class HttpServerCommand extends Console\Command\Command
 	public function __construct(
 		string $serverAddress,
 		int $serverPort,
-		Middlewares\StaticFilesMiddleware $staticFilesMiddleware,
-		Middlewares\RouterMiddleware $routerMiddleware,
+		Middleware\CorsMiddleware $corsMiddleware,
+		Middleware\StaticFilesMiddleware $staticFilesMiddleware,
+		Middleware\RouterMiddleware $routerMiddleware,
 		EventLoop\LoopInterface $eventLoop,
 		EventDispatcher\EventDispatcherInterface $dispatcher,
 		?Log\LoggerInterface $logger = null,
@@ -95,6 +99,7 @@ class HttpServerCommand extends Console\Command\Command
 		$this->serverPort = $serverPort;
 		$this->serverCertificate = $serverCertificate;
 
+		$this->corsMiddleware = $corsMiddleware;
 		$this->staticFilesMiddleware = $staticFilesMiddleware;
 		$this->routerMiddleware = $routerMiddleware;
 
@@ -144,10 +149,11 @@ class HttpServerCommand extends Console\Command\Command
 		 */
 
 		try {
-			$this->dispatcher->dispatch(new ApplicationEventsEvents\StartupEvent());
+			$this->dispatcher->dispatch(new Events\StartupEvent());
 
 			$server = new Http\Server(
 				$this->eventLoop,
+				$this->corsMiddleware,
 				$this->staticFilesMiddleware,
 				$this->routerMiddleware
 			);

@@ -15,10 +15,12 @@
 
 namespace FastyBird\WebServer\DI;
 
+use FastyBird\WebServer\Application;
 use FastyBird\WebServer\Commands;
 use FastyBird\WebServer\Http;
-use FastyBird\WebServer\Middlewares;
+use FastyBird\WebServer\Middleware;
 use FastyBird\WebServer\Router;
+use Fig\Http\Message\RequestMethodInterface;
 use IPub\SlimRouter;
 use Nette;
 use Nette\DI;
@@ -72,6 +74,27 @@ class WebServerExtension extends DI\CompilerExtension
 				'webroot' => Schema\Expect::string(null)->nullable(),
 				'enabled' => Schema\Expect::bool(false),
 			]),
+			'cors'   => Schema\Expect::structure([
+				'enabled' => Schema\Expect::bool(false),
+				'allow'   => Schema\Expect::structure([
+					'origin'      => Schema\Expect::string('*'),
+					'methods'     => Schema\Expect::arrayOf('string')
+						->default([
+							RequestMethodInterface::METHOD_GET,
+							RequestMethodInterface::METHOD_POST,
+							RequestMethodInterface::METHOD_PATCH,
+							RequestMethodInterface::METHOD_DELETE,
+							RequestMethodInterface::METHOD_OPTIONS,
+						]),
+					'credentials' => Schema\Expect::bool(true),
+					'headers'     => Schema\Expect::arrayOf('string')
+						->default([
+							'Content-Type',
+							'Authorization',
+							'X-Requested-With',
+						]),
+				]),
+			]),
 		]);
 	}
 
@@ -103,13 +126,30 @@ class WebServerExtension extends DI\CompilerExtension
 			]);
 
 		// Webserver middlewares
+		$builder->addDefinition($this->prefix('middlewares.cors'))
+			->setType(Middleware\CorsMiddleware::class)
+			->setArguments([
+				'enabled'          => $configuration->cors->enabled,
+				'allowOrigin'      => $configuration->cors->allow->origin,
+				'allowMethods'     => $configuration->cors->allow->methods,
+				'allowCredentials' => $configuration->cors->allow->credentials,
+				'allowHeaders'     => $configuration->cors->allow->headers,
+			]);
+
 		$builder->addDefinition($this->prefix('middlewares.staticFiles'))
-			->setType(Middlewares\StaticFilesMiddleware::class)
+			->setType(Middleware\StaticFilesMiddleware::class)
 			->setArgument('publicRoot', $configuration->static->webroot)
 			->setArgument('enabled', $configuration->static->enabled);
 
 		$builder->addDefinition($this->prefix('middlewares.router'))
-			->setType(Middlewares\RouterMiddleware::class);
+			->setType(Middleware\RouterMiddleware::class);
+
+		// Applications
+		$builder->addDefinition($this->prefix('application.console'))
+			->setType(Application\ConsoleApplication::class);
+
+		$builder->addDefinition($this->prefix('application.classic'))
+			->setType(Application\Application::class);
 	}
 
 	/**
