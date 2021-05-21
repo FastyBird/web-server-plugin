@@ -15,7 +15,7 @@
 
 namespace FastyBird\WebServer\Application;
 
-use Contributte\Console;
+use Contributte\Console\Application;
 use Symfony\Component\Console\Input;
 use Symfony\Component\Console\Output;
 use Throwable;
@@ -28,8 +28,17 @@ use Throwable;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class ConsoleApplication extends Console\Application implements IConsoleApplication
+class Console implements IConsole
 {
+
+	/** @var Application */
+	private Application $application;
+
+	public function __construct(
+		Application $application
+	) {
+		$this->application = $application;
+	}
 
 	/**
 	 * @param Input\InputInterface|null $input
@@ -50,7 +59,7 @@ class ConsoleApplication extends Console\Application implements IConsoleApplicat
 			$input->setArgument('command', 'fb:web-server:start');
 		}
 
-		return parent::run($input, $output);
+		return $this->application->run($input, $output);
 	}
 
 }

@@ -186,7 +186,7 @@ For more info how to write middleware please visit: [ipub/slim-router](https://g
 
 ## Running server
 
-To be able to start server, you have to create an entrypoint for console. It is a simple script that loads the DI container and fires `FastyBird\WebServer\Application\ConsoleApplication::run`.
+To be able to start server, you have to create an entrypoint for console. It is a simple script that loads the DI container and fires `FastyBird\WebServer\Application\Console::run`.
 
 You can copy & paste it to your project, for example to `<app_root>/bin/console`.
 
@@ -204,7 +204,7 @@ require __DIR__ . '/../vendor/autoload.php';
 
 exit(Your\CoolApp\Bootstrap::boot()
     ->createContainer()
-    ->getByType(FastyBird\WebServer\Application\ConsoleApplication::class)
+    ->getByType(FastyBird\WebServer\Application\Console::class)
     ->run());
 ```
 

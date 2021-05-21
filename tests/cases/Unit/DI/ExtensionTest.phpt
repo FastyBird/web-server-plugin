@@ -22,7 +22,7 @@ final class ExtensionTest extends BaseTestCase
 	{
 		$container = $this->createContainer();
 
-		Assert::notNull($container->getByType(Application\ConsoleApplication::class));
+		Assert::notNull($container->getByType(Application\Console::class));
 		Assert::notNull($container->getByType(Application\Application::class));
 
 		Assert::notNull($container->getByType(Commands\HttpServerCommand::class));

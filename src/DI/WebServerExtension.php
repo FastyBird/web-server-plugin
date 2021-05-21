@@ -146,8 +146,7 @@ class WebServerExtension extends DI\CompilerExtension
 
 		// Applications
 		$builder->addDefinition($this->prefix('application.console'))
-			->setType(Application\ConsoleApplication::class)
-			->setAutowired(false);
+			->setType(Application\Console::class);
 
 		$builder->addDefinition($this->prefix('application.classic'))
 			->setType(Application\Application::class);

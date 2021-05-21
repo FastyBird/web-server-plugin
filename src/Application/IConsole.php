@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * IConsoleApplication.php
+ * IConsole.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -26,7 +26,7 @@ use Symfony\Component\Console\Output;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-interface IConsoleApplication
+interface IConsole
 {
 
 	/**
