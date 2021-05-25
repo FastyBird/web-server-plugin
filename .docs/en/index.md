@@ -10,7 +10,7 @@ The best way to install **fastybird/web-server** is using [Composer](http://getc
 composer require fastybird/web-server
 ```
 
-After that you have to register extension in *config.neon*.
+After that, you have to register extension in *config.neon*.
 
 ```neon
 extensions:
