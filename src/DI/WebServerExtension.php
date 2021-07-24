@@ -69,7 +69,10 @@ class WebServerExtension extends DI\CompilerExtension
 		$config->onCompile[] = function (
 			Nette\Configurator $config,
 			DI\Compiler $compiler
-		) use ($extensionName, $cliMode): void {
+		) use (
+			$extensionName,
+			$cliMode
+		): void {
 			$compiler->addExtension($extensionName, new WebServerExtension($cliMode));
 		};
 	}
