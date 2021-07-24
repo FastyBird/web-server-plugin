@@ -44,7 +44,7 @@ abstract class BaseTestCase extends BaseMockeryTestCase
 			$config->addConfig($additionalConfig);
 		}
 
-		WebServer\DI\WebServerExtension::register($config);
+		WebServer\DI\WebServerExtension::register($config, true);
 
 		return $config->createContainer();
 	}

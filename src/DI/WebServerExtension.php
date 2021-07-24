@@ -17,6 +17,7 @@ namespace FastyBird\WebServer\DI;
 
 use FastyBird\WebServer\Application;
 use FastyBird\WebServer\Commands;
+use FastyBird\WebServer\Exceptions;
 use FastyBird\WebServer\Http;
 use FastyBird\WebServer\Middleware;
 use FastyBird\WebServer\Router;
@@ -41,21 +42,35 @@ class WebServerExtension extends DI\CompilerExtension
 
 	public const ROUTER_MIDDLEWARE_TAG = 'middleware';
 
+	/** @var bool */
+	private bool $cliMode;
+
+	public function __construct(bool $cliMode = false)
+	{
+		if (func_num_args() <= 0) {
+			throw new Exceptions\InvalidArgumentException(sprintf('Provide CLI mode, e.q. %s(%%consoleMode%%).', self::class));
+		}
+
+		$this->cliMode = $cliMode;
+	}
+
 	/**
 	 * @param Nette\Configurator $config
+	 * @param bool $cliMode
 	 * @param string $extensionName
 	 *
 	 * @return void
 	 */
 	public static function register(
 		Nette\Configurator $config,
+		bool $cliMode = false,
 		string $extensionName = 'fbWebServer'
 	): void {
 		$config->onCompile[] = function (
 			Nette\Configurator $config,
 			DI\Compiler $compiler
-		) use ($extensionName): void {
-			$compiler->addExtension($extensionName, new WebServerExtension());
+		) use ($extensionName, $cliMode): void {
+			$compiler->addExtension($extensionName, new WebServerExtension($cliMode));
 		};
 	}
 
@@ -145,8 +160,11 @@ class WebServerExtension extends DI\CompilerExtension
 			->setType(Middleware\RouterMiddleware::class);
 
 		// Applications
-		$builder->addDefinition($this->prefix('application.console'))
-			->setType(Application\Console::class);
+
+		if ($this->cliMode === true) {
+			$builder->addDefinition($this->prefix('application.console'))
+				->setType(Application\Console::class);
+		}
 
 		$builder->addDefinition($this->prefix('application.classic'))
 			->setType(Application\Application::class);
