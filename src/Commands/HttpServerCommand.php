@@ -151,14 +151,14 @@ class HttpServerCommand extends Console\Command\Command
 		try {
 			$this->dispatcher->dispatch(new Events\StartupEvent());
 
-			$server = new Http\Server(
+			$httpServer = new Http\HttpServer(
 				$this->eventLoop,
 				$this->corsMiddleware,
 				$this->staticFilesMiddleware,
 				$this->routerMiddleware
 			);
 
-			$server->on('error', function (Throwable $ex): void {
+			$httpServer->on('error', function (Throwable $ex): void {
 				// Log error action reason
 				$this->logger->error('[FB:WEB_SERVER] Stopping HTTP server', [
 					'exception' => [
@@ -171,7 +171,7 @@ class HttpServerCommand extends Console\Command\Command
 				$this->eventLoop->stop();
 			});
 
-			$server->listen($socketServer);
+			$httpServer->listen($socketServer);
 
 			if ($socketServer->getAddress() !== null) {
 				if ($socketServer instanceof Socket\SecureServer) {
