@@ -130,7 +130,7 @@ class HttpServerCommand extends Console\Command\Command
 	): int {
 		$this->logger->info('[FB:WEB_SERVER] Starting HTTP server');
 
-		$socketServer = new Socket\Server($this->serverAddress . ':' . $this->serverPort, $this->eventLoop);
+		$socketServer = new Socket\SocketServer($this->serverAddress . ':' . $this->serverPort, [], $this->eventLoop);
 
 		if (
 			$this->serverCertificate !== null
