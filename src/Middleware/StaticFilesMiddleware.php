@@ -16,7 +16,7 @@
 namespace FastyBird\WebServer\Middleware;
 
 use FastyBird\WebServer\Exceptions;
-use Narrowspark\MimeType;
+use FastyBird\WebServer\Utils;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use React\Http\Message\Response;
@@ -68,13 +68,27 @@ final class StaticFilesMiddleware
 					throw new Exceptions\FileNotFoundException('Content of requested file could not be loaded');
 				}
 
-				$mimeType = MimeType\MimeTypeFileExtensionGuesser::guess($file);
-
-				return new Response(200, ['Content-Type' => $mimeType ?? 'text/plain'], $fileContents);
+				return new Response(200, ['Content-Type' => $this->getMimeType($file)], $fileContents);
 			}
 		}
 
 		return $next($request);
+	}
+
+	/**
+	 * @param string $file
+	 *
+	 * @return string
+	 */
+	private function getMimeType(string $file): string
+	{
+		$extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+
+		if (isset(Utils\MimeTypesList::MIMES[$extension])) {
+			return Utils\MimeTypesList::MIMES[$extension][0];
+		}
+
+		return 'text/plain';
 	}
 
 }
