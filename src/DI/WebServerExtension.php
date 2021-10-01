@@ -125,17 +125,17 @@ class WebServerExtension extends DI\CompilerExtension
 		/** @var stdClass $configuration */
 		$configuration = $this->getConfig();
 
-		$builder->addDefinition($this->prefix('routing.responseFactory'))
+		$builder->addDefinition($this->prefix('routing.responseFactory'), new DI\Definitions\ServiceDefinition())
 			->setType(Http\ResponseFactory::class);
 
-		$builder->addDefinition($this->prefix('routing.router'))
+		$builder->addDefinition($this->prefix('routing.router'), new DI\Definitions\ServiceDefinition())
 			->setType(Router\Router::class);
 
-		$builder->addDefinition('react.eventLoop')
+		$builder->addDefinition('react.eventLoop', new DI\Definitions\ServiceDefinition())
 			->setType(EventLoop\LoopInterface::class)
 			->setFactory('React\EventLoop\Factory::create');
 
-		$builder->addDefinition($this->prefix('command.server'))
+		$builder->addDefinition($this->prefix('command.server'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\HttpServerCommand::class)
 			->setArguments([
 				'serverAddress'     => $configuration->server->address,
@@ -144,7 +144,7 @@ class WebServerExtension extends DI\CompilerExtension
 			]);
 
 		// Webserver middlewares
-		$builder->addDefinition($this->prefix('middlewares.cors'))
+		$builder->addDefinition($this->prefix('middlewares.cors'), new DI\Definitions\ServiceDefinition())
 			->setType(Middleware\CorsMiddleware::class)
 			->setArguments([
 				'enabled'          => $configuration->cors->enabled,
@@ -154,22 +154,22 @@ class WebServerExtension extends DI\CompilerExtension
 				'allowHeaders'     => $configuration->cors->allow->headers,
 			]);
 
-		$builder->addDefinition($this->prefix('middlewares.staticFiles'))
+		$builder->addDefinition($this->prefix('middlewares.staticFiles'), new DI\Definitions\ServiceDefinition())
 			->setType(Middleware\StaticFilesMiddleware::class)
 			->setArgument('publicRoot', $configuration->static->webroot)
 			->setArgument('enabled', $configuration->static->enabled);
 
-		$builder->addDefinition($this->prefix('middlewares.router'))
+		$builder->addDefinition($this->prefix('middlewares.router'), new DI\Definitions\ServiceDefinition())
 			->setType(Middleware\RouterMiddleware::class);
 
 		// Applications
 
 		if ($this->cliMode === true) {
-			$builder->addDefinition($this->prefix('application.console'))
+			$builder->addDefinition($this->prefix('application.console'), new DI\Definitions\ServiceDefinition())
 				->setType(Application\Console::class);
 		}
 
-		$builder->addDefinition($this->prefix('application.classic'))
+		$builder->addDefinition($this->prefix('application.classic'), new DI\Definitions\ServiceDefinition())
 			->setType(Application\Application::class);
 	}
 

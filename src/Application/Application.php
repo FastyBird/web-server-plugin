@@ -15,7 +15,7 @@
 
 namespace FastyBird\WebServer\Application;
 
-use FastyBird\WebServer\Events;
+use FastyBird\ApplicationExchange\Events as ApplicationExchangeEvents;
 use IPub\SlimRouter\Routing;
 use Nette;
 use Psr\EventDispatcher;
@@ -65,7 +65,7 @@ class Application implements IApplication
 	{
 		$request = ServerRequestFactory::fromGlobals();
 
-		$this->dispatcher->dispatch(new Events\RequestEvent($request));
+		$this->dispatcher->dispatch(new ApplicationExchangeEvents\RequestEvent($request));
 
 		try {
 			$response = $this->router->handle($request);
@@ -74,7 +74,7 @@ class Application implements IApplication
 			throw $e;
 		}
 
-		$this->dispatcher->dispatch(new Events\ResponseEvent($request, $response));
+		$this->dispatcher->dispatch(new ApplicationExchangeEvents\ResponseEvent($request, $response));
 
 		$this->sendStatus($response);
 		$this->sendHeaders($response);
