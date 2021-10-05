@@ -15,7 +15,7 @@
 
 namespace FastyBird\WebServer\Commands;
 
-use FastyBird\ApplicationExchange\Events as ApplicationExchangeEvents;
+use FastyBird\WebServer\Events;
 use FastyBird\WebServer\Exceptions;
 use FastyBird\WebServer\Middleware;
 use Nette;
@@ -142,14 +142,14 @@ class HttpServerCommand extends Console\Command\Command
 			]);
 		}
 
-		$this->dispatcher->dispatch(new ApplicationExchangeEvents\ApplicationInitializeEvent($socketServer));
+		$this->dispatcher->dispatch(new Events\InitializeEvent($socketServer));
 
 		/**
 		 * HTTP server
 		 */
 
 		try {
-			$this->dispatcher->dispatch(new ApplicationExchangeEvents\ApplicationStartupEvent());
+			$this->dispatcher->dispatch(new Events\StartupEvent());
 
 			$httpServer = new Http\HttpServer(
 				$this->eventLoop,

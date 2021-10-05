@@ -15,7 +15,7 @@
 
 namespace FastyBird\WebServer\Middleware;
 
-use FastyBird\ApplicationExchange\Events as ApplicationExchangeEvents;
+use FastyBird\WebServer\Events;
 use IPub\SlimRouter\Routing;
 use Psr\EventDispatcher;
 use Psr\Http\Message\ResponseInterface;
@@ -48,11 +48,11 @@ final class RouterMiddleware
 
 	public function __invoke(ServerRequestInterface $request): ResponseInterface
 	{
-		$this->dispatcher->dispatch(new ApplicationExchangeEvents\RequestEvent($request));
+		$this->dispatcher->dispatch(new Events\RequestEvent($request));
 
 		$response = $this->router->handle($request);
 
-		$this->dispatcher->dispatch(new ApplicationExchangeEvents\ResponseEvent($request, $response));
+		$this->dispatcher->dispatch(new Events\ResponseEvent($request, $response));
 
 		return $response;
 	}
