@@ -2,6 +2,7 @@
 
 namespace Tests\Cases;
 
+use FastyBird\SocketServerFactory;
 use FastyBird\WebServer\Commands;
 use FastyBird\WebServer\Middleware;
 use Mockery;
@@ -10,6 +11,7 @@ use Psr\EventDispatcher;
 use Psr\Log;
 use React\EventLoop;
 use React\Promise;
+use React\Socket;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use Tester\Assert;
@@ -49,7 +51,21 @@ final class HttpServerCommandTest extends BaseMockeryTestCase
 		$eventDispatcher = Mockery::mock(EventDispatcher\EventDispatcherInterface::class);
 		$eventDispatcher
 			->shouldReceive('dispatch')
-			->times(2);
+			->times(1);
+
+		$socketServer = Mockery::mock(Socket\ServerInterface::class);
+		$socketServer
+			->shouldReceive('getAddress')
+			->andReturn('http://127.0.0.1:8001')
+			->times(2)
+			->getMock()
+			->shouldReceive('on');
+
+		$socketServerFactory = Mockery::mock(SocketServerFactory\SocketServerFactory::class);
+		$socketServerFactory
+			->shouldReceive('create')
+			->andReturn($socketServer)
+			->times(1);
 
 		$corsFilesMiddleware = Mockery::mock(Middleware\CorsMiddleware::class);
 
@@ -59,13 +75,12 @@ final class HttpServerCommandTest extends BaseMockeryTestCase
 
 		$application = new Application();
 		$application->add(new Commands\HttpServerCommand(
-			'127.0.0.1',
-			8001,
 			$corsFilesMiddleware,
 			$staticFilesMiddleware,
 			$routerMiddleware,
-			$eventLoop,
 			$eventDispatcher,
+			$socketServerFactory,
+			$eventLoop,
 			$logger
 		));
 

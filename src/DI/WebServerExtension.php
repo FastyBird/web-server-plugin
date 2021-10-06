@@ -26,7 +26,6 @@ use IPub\SlimRouter;
 use Nette;
 use Nette\DI;
 use Nette\Schema;
-use React\EventLoop;
 use stdClass;
 
 /**
@@ -83,11 +82,6 @@ class WebServerExtension extends DI\CompilerExtension
 	public function getConfigSchema(): Schema\Schema
 	{
 		return Schema\Expect::structure([
-			'server' => Schema\Expect::structure([
-				'address'     => Schema\Expect::string('127.0.0.1'),
-				'port'        => Schema\Expect::int(8000),
-				'certificate' => Schema\Expect::string(null)->nullable(),
-			]),
 			'static' => Schema\Expect::structure([
 				'webroot' => Schema\Expect::string(null)->nullable(),
 				'enabled' => Schema\Expect::bool(false),
@@ -131,17 +125,8 @@ class WebServerExtension extends DI\CompilerExtension
 		$builder->addDefinition($this->prefix('routing.router'), new DI\Definitions\ServiceDefinition())
 			->setType(Router\Router::class);
 
-		$builder->addDefinition('react.eventLoop', new DI\Definitions\ServiceDefinition())
-			->setType(EventLoop\LoopInterface::class)
-			->setFactory('React\EventLoop\Factory::create');
-
 		$builder->addDefinition($this->prefix('command.server'), new DI\Definitions\ServiceDefinition())
-			->setType(Commands\HttpServerCommand::class)
-			->setArguments([
-				'serverAddress'     => $configuration->server->address,
-				'serverPort'        => $configuration->server->port,
-				'serverCertificate' => $configuration->server->certificate,
-			]);
+			->setType(Commands\HttpServerCommand::class);
 
 		// Webserver middlewares
 		$builder->addDefinition($this->prefix('middlewares.cors'), new DI\Definitions\ServiceDefinition())

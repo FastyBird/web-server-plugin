@@ -14,8 +14,9 @@ php:
 	date.timezone: Europe/Prague
 
 extensions:
-	contributteConsole	: Contributte\Console\DI\ConsoleExtension(%consoleMode%)
-	contributteEvents	: Contributte\EventDispatcher\DI\EventDispatcherExtension
+	contributteConsole		: Contributte\Console\DI\ConsoleExtension(%consoleMode%)
+	contributteEvents		: Contributte\EventDispatcher\DI\EventDispatcherExtension
+	fbSocketServerFactory	: FastyBird\SocketServerFactory\DI\SocketServerFactoryExtension
 
 contributteConsole:
 	name: FastyBird:WebServer!

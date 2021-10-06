@@ -15,6 +15,7 @@
 
 namespace FastyBird\WebServer\Commands;
 
+use FastyBird\SocketServerFactory;
 use FastyBird\WebServer\Events;
 use FastyBird\WebServer\Exceptions;
 use FastyBird\WebServer\Middleware;
@@ -66,44 +67,41 @@ class HttpServerCommand extends Console\Command\Command
 	/** @var Log\LoggerInterface */
 	private Log\LoggerInterface $logger;
 
+	/** @var SocketServerFactory\SocketServerFactory */
+	private SocketServerFactory\SocketServerFactory $socketServerFactory;
+
 	/** @var EventLoop\LoopInterface */
 	private EventLoop\LoopInterface $eventLoop;
 
 	/**
-	 * @param string $serverAddress
-	 * @param int $serverPort
-	 * @param string|null $serverCertificate
 	 * @param Middleware\CorsMiddleware $corsMiddleware
 	 * @param Middleware\StaticFilesMiddleware $staticFilesMiddleware
 	 * @param Middleware\RouterMiddleware $routerMiddleware
-	 * @param EventLoop\LoopInterface $eventLoop
 	 * @param EventDispatcher\EventDispatcherInterface $dispatcher
+	 * @param SocketServerFactory\SocketServerFactory $socketServerFactory
+	 * @param EventLoop\LoopInterface $eventLoop
 	 * @param Log\LoggerInterface|null $logger
 	 * @param string|null $name
 	 */
 	public function __construct(
-		string $serverAddress,
-		int $serverPort,
 		Middleware\CorsMiddleware $corsMiddleware,
 		Middleware\StaticFilesMiddleware $staticFilesMiddleware,
 		Middleware\RouterMiddleware $routerMiddleware,
-		EventLoop\LoopInterface $eventLoop,
 		EventDispatcher\EventDispatcherInterface $dispatcher,
+		SocketServerFactory\SocketServerFactory $socketServerFactory,
+		EventLoop\LoopInterface $eventLoop,
 		?Log\LoggerInterface $logger = null,
-		?string $serverCertificate = null,
 		?string $name = null
 	) {
 		parent::__construct($name);
-
-		$this->serverAddress = $serverAddress;
-		$this->serverPort = $serverPort;
-		$this->serverCertificate = $serverCertificate;
 
 		$this->corsMiddleware = $corsMiddleware;
 		$this->staticFilesMiddleware = $staticFilesMiddleware;
 		$this->routerMiddleware = $routerMiddleware;
 
 		$this->dispatcher = $dispatcher;
+		$this->socketServerFactory = $socketServerFactory;
+
 		$this->logger = $logger ?? new Log\NullLogger();
 
 		$this->eventLoop = $eventLoop;
@@ -130,19 +128,7 @@ class HttpServerCommand extends Console\Command\Command
 	): int {
 		$this->logger->info('[FB:WEB_SERVER] Starting HTTP server');
 
-		$socketServer = new Socket\SocketServer($this->serverAddress . ':' . $this->serverPort, [], $this->eventLoop);
-
-		if (
-			$this->serverCertificate !== null
-			&& is_file($this->serverCertificate)
-			&& file_exists($this->serverCertificate)
-		) {
-			$socketServer = new Socket\SecureServer($socketServer, $this->eventLoop, [
-				'local_cert' => $this->serverCertificate,
-			]);
-		}
-
-		$this->dispatcher->dispatch(new Events\InitializeEvent($socketServer));
+		$socketServer = $this->socketServerFactory->create();
 
 		/**
 		 * HTTP server

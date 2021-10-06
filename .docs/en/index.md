@@ -14,7 +14,7 @@ After that, you have to register extension in *config.neon*.
 
 ```neon
 extensions:
-    fbWebServer: FastyBird\WebServer\DI\WebServerExtension
+    fbWebServer: FastyBird\WebServer\DI\WebServerExtension(%consoleMode%)
 ```
 
 This extension is dependent on other extensions, and they have to be registered too
@@ -24,6 +24,7 @@ extensions:
     ...
     contributteConsole: Contributte\Console\DI\ConsoleExtension(%consoleMode%)
     contributteEvents: Contributte\EventDispatcher\DI\EventDispatcherExtension
+    fbSocketServerFactory: FastyBird\SocketServerFactory\DI\SocketServerFactoryExtension
 ```
 
 > For information how to configure these extensions please visit their doc pages
@@ -34,24 +35,27 @@ This extension has some configuration options:
 
 ```neon
 fbWebServer:
+    static:
+        webroot: /path/to/public/folder
+        enabled: false
+
+fbSocketServerFactory:
     server:
         address: 127.0.0.1
         port: 8000
         certificate: /path/to/your/certificate.pa
-    static:
-        webroot: /path/to/public/folder
-        enabled: false
 ```
 
 Where:
 
+- `static -> webroot` is path to public static files and this files could be served by this webserver
+- `static -> enabled` enable or disable serving static files support
+
+And settings for socket server extension:
+
 - `server -> address` is address where is server listening for incoming requests
 - `server -> port` is address port where is server listening for incoming requests
 - `server -> certificate` is path to your private certificate to enable SSL communication
-
-
-- `static -> webroot` is path to public static files and this files could be served by this webserver
-- `static -> enabled` enable or disable serving static files support
 
 ## Application routes
 
@@ -238,9 +242,6 @@ And as a last step, you have to configure you Apache or Nginx server to load you
 # Tips
 
 If you want to use [{JSON:API}](https://jsonapi.org/) for you api calls, you could use [fastybird/json-api](https://github.com/FastyBird/json-api) package. This package brings you schemas factory for your responses and document to entity hydrator
-
-IF you are using [Doctrine2](https://www.doctrine-project.org), we suggest you to use [fastybird/database](https://github.com/FastyBird/database) package. This package is checking databse connection and in case connection is closed by server, it tries to restore it.
-And also this package has middleware which help you solve pagination for you responses.
 
 And last but not least, [fastybird/simple-auth](https://github.com/FastyBird/simple-auth). With this package you could create basic token based authentication and authorization.
 

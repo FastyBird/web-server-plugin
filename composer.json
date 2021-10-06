@@ -36,6 +36,7 @@
     "php": ">=7.4.0|>=8.0.0",
     "contributte/console": "^0.9",
     "contributte/event-dispatcher": "^0.8",
+    "fastybird/socket-server-factory": "^0.1",
     "ipub/slim-router": "^0.2",
     "nette/bootstrap": "^3.1",
     "nette/di": "^3.0",
@@ -61,7 +62,6 @@
 
   "suggest": {
     "fastybird/json-api": "Handle request with {JSON:API} schemas",
-    "fastybird/database": "For application with Doctrine2 it will help you watch DB connection",
     "fastybird/simple-auth": "Handle basic user authentication & authorization"
   },
 
