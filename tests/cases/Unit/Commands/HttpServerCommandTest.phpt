@@ -78,9 +78,9 @@ final class HttpServerCommandTest extends BaseMockeryTestCase
 			$corsFilesMiddleware,
 			$staticFilesMiddleware,
 			$routerMiddleware,
-			$eventDispatcher,
 			$socketServerFactory,
 			$eventLoop,
+			$eventDispatcher,
 			$logger
 		));
 

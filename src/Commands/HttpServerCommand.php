@@ -61,8 +61,8 @@ class HttpServerCommand extends Console\Command\Command
 	/** @var Middleware\RouterMiddleware */
 	private Middleware\RouterMiddleware $routerMiddleware;
 
-	/** @var EventDispatcher\EventDispatcherInterface */
-	private EventDispatcher\EventDispatcherInterface $dispatcher;
+	/** @var EventDispatcher\EventDispatcherInterface|null */
+	private ?EventDispatcher\EventDispatcherInterface $dispatcher;
 
 	/** @var Log\LoggerInterface */
 	private Log\LoggerInterface $logger;
@@ -77,7 +77,7 @@ class HttpServerCommand extends Console\Command\Command
 	 * @param Middleware\CorsMiddleware $corsMiddleware
 	 * @param Middleware\StaticFilesMiddleware $staticFilesMiddleware
 	 * @param Middleware\RouterMiddleware $routerMiddleware
-	 * @param EventDispatcher\EventDispatcherInterface $dispatcher
+	 * @param EventDispatcher\EventDispatcherInterface|null $dispatcher
 	 * @param SocketServerFactory\SocketServerFactory $socketServerFactory
 	 * @param EventLoop\LoopInterface $eventLoop
 	 * @param Log\LoggerInterface|null $logger
@@ -87,9 +87,9 @@ class HttpServerCommand extends Console\Command\Command
 		Middleware\CorsMiddleware $corsMiddleware,
 		Middleware\StaticFilesMiddleware $staticFilesMiddleware,
 		Middleware\RouterMiddleware $routerMiddleware,
-		EventDispatcher\EventDispatcherInterface $dispatcher,
 		SocketServerFactory\SocketServerFactory $socketServerFactory,
 		EventLoop\LoopInterface $eventLoop,
+		?EventDispatcher\EventDispatcherInterface $dispatcher = null,
 		?Log\LoggerInterface $logger = null,
 		?string $name = null
 	) {
@@ -135,7 +135,9 @@ class HttpServerCommand extends Console\Command\Command
 		 */
 
 		try {
-			$this->dispatcher->dispatch(new Events\StartupEvent());
+			if ($this->dispatcher !== null) {
+				$this->dispatcher->dispatch(new Events\StartupEvent());
+			}
 
 			$httpServer = new Http\HttpServer(
 				$this->eventLoop,

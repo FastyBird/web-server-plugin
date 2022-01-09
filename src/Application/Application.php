@@ -43,12 +43,12 @@ class Application implements IApplication
 	/** @var Routing\IRouter */
 	private Routing\IRouter $router;
 
-	/** @var EventDispatcher\EventDispatcherInterface */
-	private EventDispatcher\EventDispatcherInterface $dispatcher;
+	/** @var EventDispatcher\EventDispatcherInterface|null */
+	private ?EventDispatcher\EventDispatcherInterface $dispatcher;
 
 	public function __construct(
 		Routing\IRouter $router,
-		EventDispatcher\EventDispatcherInterface $dispatcher
+		?EventDispatcher\EventDispatcherInterface $dispatcher = null
 	) {
 		$this->router = $router;
 		$this->dispatcher = $dispatcher;
@@ -65,7 +65,9 @@ class Application implements IApplication
 	{
 		$request = ServerRequestFactory::fromGlobals();
 
-		$this->dispatcher->dispatch(new Events\RequestEvent($request));
+		if ($this->dispatcher !== null) {
+			$this->dispatcher->dispatch(new Events\RequestEvent($request));
+		}
 
 		try {
 			$response = $this->router->handle($request);
@@ -74,7 +76,9 @@ class Application implements IApplication
 			throw $e;
 		}
 
-		$this->dispatcher->dispatch(new Events\ResponseEvent($request, $response));
+		if ($this->dispatcher !== null) {
+			$this->dispatcher->dispatch(new Events\ResponseEvent($request, $response));
+		}
 
 		$this->sendStatus($response);
 		$this->sendHeaders($response);

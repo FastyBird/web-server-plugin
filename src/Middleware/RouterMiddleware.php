@@ -32,15 +32,15 @@ use Psr\Http\Message\ServerRequestInterface;
 final class RouterMiddleware
 {
 
-	/** @var EventDispatcher\EventDispatcherInterface */
-	private EventDispatcher\EventDispatcherInterface $dispatcher;
+	/** @var EventDispatcher\EventDispatcherInterface|null */
+	private ?EventDispatcher\EventDispatcherInterface $dispatcher;
 
 	/** @var Routing\IRouter */
 	private Routing\IRouter $router;
 
 	public function __construct(
 		Routing\IRouter $router,
-		EventDispatcher\EventDispatcherInterface $dispatcher
+		?EventDispatcher\EventDispatcherInterface $dispatcher = null
 	) {
 		$this->router = $router;
 		$this->dispatcher = $dispatcher;
@@ -48,11 +48,15 @@ final class RouterMiddleware
 
 	public function __invoke(ServerRequestInterface $request): ResponseInterface
 	{
-		$this->dispatcher->dispatch(new Events\RequestEvent($request));
+		if ($this->dispatcher !== null) {
+			$this->dispatcher->dispatch(new Events\RequestEvent($request));
+		}
 
 		$response = $this->router->handle($request);
 
-		$this->dispatcher->dispatch(new Events\ResponseEvent($request, $response));
+		if ($this->dispatcher !== null) {
+			$this->dispatcher->dispatch(new Events\ResponseEvent($request, $response));
+		}
 
 		return $response;
 	}

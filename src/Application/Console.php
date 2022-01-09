@@ -15,7 +15,7 @@
 
 namespace FastyBird\WebServer\Application;
 
-use Contributte\Console\Application;
+use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input;
 use Symfony\Component\Console\Output;
 use Throwable;
@@ -35,9 +35,9 @@ class Console implements IConsole
 	private Application $application;
 
 	public function __construct(
-		Application $application
+		?Application $application = null
 	) {
-		$this->application = $application;
+		$this->application = $application ?? new Application();
 	}
 
 	/**
