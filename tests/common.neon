@@ -11,7 +11,7 @@
 # @date			19.07.20
 
 php:
-	date.timezone: Europe/Prague
+    date.timezone: Europe/Prague
 
 extensions:
-	fbSocketServerFactory : FastyBird\SocketServerFactory\DI\SocketServerFactoryExtension
+    fbSocketServerFactory : FastyBird\SocketServerFactory\DI\SocketServerFactoryExtension
