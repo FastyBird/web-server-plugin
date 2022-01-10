@@ -43,15 +43,6 @@ class HttpServerCommand extends Console\Command\Command
 
 	use Nette\SmartObject;
 
-	/** @var string */
-	private string $serverAddress;
-
-	/** @var int */
-	private int $serverPort;
-
-	/** @var string|null */
-	private ?string $serverCertificate;
-
 	/** @var Middleware\CorsMiddleware */
 	private Middleware\CorsMiddleware $corsMiddleware;
 

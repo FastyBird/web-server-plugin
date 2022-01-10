@@ -59,7 +59,8 @@ And settings for socket server extension:
 
 ## Application routes
 
-This extension has router collector services which will search for your custom routes providers and register routes to the server service.
+This extension has router collector services which will search for your custom routes providers and register routes to
+the server service.
 
 All what you have to do is create routes provider service and configure routes and their controllers:
 
@@ -108,7 +109,8 @@ class Routes implements Router\IRoutes
 }
 ```
 
-For more info how to write routes and controllers please visit: [ipub/slim-router](https://github.com/iPublikuj/slim-router/blob/master/docs/en/index.md) package documentation
+For more info how to write routes and controllers please
+visit: [ipub/slim-router](https://github.com/iPublikuj/slim-router/blob/master/docs/en/index.md) package documentation
 
 ## Custom middleware
 
@@ -149,8 +151,9 @@ services:
     - {factory: Your\CoolApp\AccessControlMiddleware, tags: [middleware: {priority: 30}]}
 ```
 
-Extension will search for all middleware which are registered and register them to the router service.
-This type of middleware will be used for each route. But there could be cases where you want use your middleware for specific routes only.
+Extension will search for all middleware which are registered and register them to the router service. This type of
+middleware will be used for each route. But there could be cases where you want use your middleware for specific routes
+only.
 
 It that case you could create middleware like shown above, but omit tag configuration in neon
 
@@ -159,7 +162,8 @@ services:
     - {factory: Your\CoolApp\AccessControlMiddleware}
 ```
 
-Middleware will be registered as usual service and could be injected into router, where you could add it to specific route.
+Middleware will be registered as usual service and could be injected into router, where you could add it to specific
+route.
 
 ```php
 namespace Your\CoolApp\Routing;
@@ -186,11 +190,13 @@ class Routes implements Router\IRoutes
 }
 ```
 
-For more info how to write middleware please visit: [ipub/slim-router](https://github.com/iPublikuj/slim-router/blob/master/docs/en/index.md) package documentation
+For more info how to write middleware please
+visit: [ipub/slim-router](https://github.com/iPublikuj/slim-router/blob/master/docs/en/index.md) package documentation
 
 ## Running server
 
-To be able to start server, you have to create an entrypoint for console. It is a simple script that loads the DI container and fires `FastyBird\WebServer\Application\Console::run`.
+To be able to start server, you have to create an entrypoint for console. It is a simple script that loads the DI
+container and fires `FastyBird\WebServer\Application\Console::run`.
 
 You can copy & paste it to your project, for example to `<app_root>/bin/console`.
 
@@ -220,9 +226,11 @@ To start serving content and handling request just start server with command:
 
 ## What about Apache or Nginx?
 
-If you have any reason to use classic web server like [Apache](https://www.apache.org) or [Nginx](https://www.nginx.com), this extension has solution for you.
+If you have any reason to use classic web server like [Apache](https://www.apache.org) or [Nginx](https://www.nginx.com)
+, this extension has solution for you.
 
-Steps to achieve this way is almost same as in console version. You have to create an entrypoint which will loads DI and fire `FastyBird\WebServer\Application\Application::run` 
+Steps to achieve this way is almost same as in console version. You have to create an entrypoint which will loads DI and
+fire `FastyBird\WebServer\Application\Application::run`
 
 You can copy & paste it to your project, for example to `<app_root>/www/index.php`.
 
@@ -241,9 +249,13 @@ And as a last step, you have to configure you Apache or Nginx server to load you
 
 # Tips
 
-If you want to use [{JSON:API}](https://jsonapi.org/) for you api calls, you could use [fastybird/json-api](https://github.com/FastyBird/json-api) package. This package brings you schemas factory for your responses and document to entity hydrator
+If you want to use [{JSON:API}](https://jsonapi.org/) for you api calls, you could
+use [fastybird/json-api](https://github.com/FastyBird/json-api) package. This package brings you schemas factory for
+your responses and document to entity hydrator
 
-And last but not least, [fastybird/simple-auth](https://github.com/FastyBird/simple-auth). With this package you could create basic token based authentication and authorization.
+And last but not least, [fastybird/simple-auth](https://github.com/FastyBird/simple-auth). With this package you could
+create basic token based authentication and authorization.
 
 ***
-Homepage [https://www.fastybird.com](https://www.fastybird.com) and repository [https://github.com/FastyBird/web-server](https://github.com/FastyBird/web-server).
+Homepage [https://www.fastybird.com](https://www.fastybird.com) and
+repository [https://github.com/FastyBird/web-server](https://github.com/FastyBird/web-server).

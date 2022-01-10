@@ -1,8 +1,8 @@
 {
-  "name" : "fastybird/web-server",
-  "type" : "library",
-  "description" : "FastyBird simple web server library",
-  "keywords" : [
+  "name": "fastybird/web-server",
+  "type": "library",
+  "description": "FastyBird simple web server library",
+  "keywords": [
     "fastybird",
     "fb",
     "libs",
@@ -12,59 +12,60 @@
     "http"
   ],
 
-  "homepage" : "https://www.fastybird.com",
+  "homepage": "https://www.fastybird.com",
 
-  "license" : "Apache-2.0",
+  "license": "Apache-2.0",
 
-  "authors" : [
+  "authors": [
     {
-      "name" : "FastyBird s.r.o.",
-      "email" : "code@fastybird.com",
-      "homepage" : "https://www.fastybird.com"
+      "name": "FastyBird s.r.o.",
+      "email": "code@fastybird.com",
+      "homepage": "https://www.fastybird.com"
     },
     {
-      "name" : "Adam Kadlec",
-      "email" : "adam.kadlec@fastybird.com"
+      "name": "Adam Kadlec",
+      "email": "adam.kadlec@fastybird.com"
     }
   ],
 
   "support": {
     "email": "code@fastybird.com",
     "issues": "https://github.com/FastyBird/web-server/issues",
-    "source" : "https://github.com/FastyBird/web-server"
+    "source": "https://github.com/FastyBird/web-server"
   },
 
-  "prefer-stable" : true,
+  "prefer-stable": true,
 
-  "minimum-stability" : "stable",
+  "minimum-stability": "stable",
 
-  "require" : {
+  "require": {
     "php": ">=7.4.0|>=8.0.0",
-    "fastybird/socket-server-factory": "^0.2",
+    "cweagans/composer-patches": "^1.7",
+    "fastybird/socket-server-factory": "^0.3",
     "ipub/slim-router": "^0.2",
     "nette/bootstrap": "^3.1",
     "nette/di": "^3.0",
     "nette/utils": "^3.2",
     "psr/event-dispatcher": "^1.0",
     "psr/http-message": "^1.0",
-    "psr/log": "^1.1",
-    "react/http": "^1.3",
-    "sunrise/http-server-request": "^1.1",
-    "symfony/console": "^5.0",
+    "psr/log": "^1.1|^3.0",
+    "react/http": "^1.5",
+    "sunrise/http-server-request": "^2.0",
+    "symfony/console": "^5.0|^6.0",
     "symfony/event-dispatcher-contracts": "^2.5|^3.0"
   },
 
-  "require-dev" : {
-    "mockery/mockery" : "^1.4",
-    "ninjify/nunjuck" : "^0.3",
-    "ninjify/qa" : "^0.12",
-    "pds/skeleton" : "~1.0",
-    "phpstan/extension-installer" : "^1.1",
-    "phpstan/phpstan" : "^0.12",
-    "phpstan/phpstan-deprecation-rules" : "^0.12",
-    "phpstan/phpstan-nette" : "^0.12",
-    "phpstan/phpstan-strict-rules" : "^0.12",
-    "tracy/tracy" : "^2.8"
+  "require-dev": {
+    "mockery/mockery": "^1.4",
+    "ninjify/nunjuck": "^0.3",
+    "ninjify/qa": "^0.13",
+    "pds/skeleton": "^1.0",
+    "phpstan/extension-installer": "^1.1",
+    "phpstan/phpstan": "^1.3",
+    "phpstan/phpstan-deprecation-rules": "^1.0",
+    "phpstan/phpstan-nette": "^1.0",
+    "phpstan/phpstan-strict-rules": "^1.1",
+    "tracy/tracy": "^2.9"
   },
 
   "suggest": {
@@ -72,20 +73,28 @@
     "fastybird/simple-auth": "Handle basic user authentication & authorization"
   },
 
-  "autoload" : {
-    "psr-4" : {
-      "FastyBird\\WebServer\\" : "src/"
+  "autoload": {
+    "psr-4": {
+      "FastyBird\\WebServer\\": "src/"
     }
   },
 
-  "autoload-dev" : {
-    "psr-4" : {
-      "Tests\\Cases\\" : "tests/cases",
-      "Tests\\Fixtures\\" : "tests/fixtures"
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\Cases\\": "tests/cases",
+      "Tests\\Fixtures\\": "tests/fixtures"
     }
   },
 
-  "config" : {
-    "sort-packages" : true
+  "config": {
+    "sort-packages": true
+  },
+
+  "extra": {
+    "patches": {
+      "nette/utils": {
+        "Bug: Offset check with null support": "patches/nette.array.offsetCheck.diff"
+      }
+    }
   }
 }

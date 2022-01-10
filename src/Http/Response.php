@@ -42,7 +42,9 @@ class Response extends SlimRouter\Http\Response
 
 	public function getEntity(): ?AbstractEntity
 	{
-		return $this->getAttribute(ResponseAttributes::ATTR_ENTITY, null);
+		$entity = $this->getAttribute(ResponseAttributes::ATTR_ENTITY, null);
+
+		return $entity instanceof AbstractEntity ? $entity : null;
 	}
 
 	/**
