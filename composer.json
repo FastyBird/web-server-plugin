@@ -41,7 +41,7 @@
   "require": {
     "php": ">=7.4.0|>=8.0.0",
     "cweagans/composer-patches": "^1.7",
-    "fastybird/socket-server-factory": "^0.3",
+    "fastybird/socket-server-factory": "^0.4",
     "ipub/slim-router": "^0.2",
     "nette/bootstrap": "^3.1",
     "nette/di": "^3.0",
