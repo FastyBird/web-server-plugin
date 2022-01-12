@@ -34,11 +34,23 @@ final class HttpServerCommandTest extends BaseMockeryTestCase
 		$logger = Mockery::mock(Log\LoggerInterface::class);
 		$logger
 			->shouldReceive('info')
-			->withArgs(['[FB:WEB_SERVER] Starting HTTP server'])
+			->withArgs([
+				'Starting HTTP server',
+				[
+					'source' => 'server-command',
+					'type'   => 'start',
+				],
+			])
 			->times(1)
 			->getMock()
 			->shouldReceive('info')
-			->withArgs(['[FB:WEB_SERVER] Listening on "http://127.0.0.1:8001"'])
+			->withArgs([
+				'Listening on "http://127.0.0.1:8001"',
+				[
+					'source' => 'server-command',
+					'type'   => 'listen',
+				],
+			])
 			->times(1);
 
 		$eventLoop = Mockery::mock(EventLoop\LoopInterface::class);
