@@ -117,7 +117,13 @@ class HttpServerCommand extends Console\Command\Command
 		Input\InputInterface $input,
 		Output\OutputInterface $output
 	): int {
-		$this->logger->info('[FB:WEB_SERVER] Starting HTTP server');
+		$this->logger->info(
+			'Starting HTTP server',
+			[
+				'source'   => 'server-command',
+				'type'     => 'start',
+			]
+		);
 
 		$socketServer = $this->socketServerFactory->create();
 
@@ -139,13 +145,18 @@ class HttpServerCommand extends Console\Command\Command
 
 			$httpServer->on('error', function (Throwable $ex): void {
 				// Log error action reason
-				$this->logger->error('[FB:WEB_SERVER] Stopping HTTP server', [
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code'    => $ex->getCode(),
-					],
-					'cmd'       => $this->getName(),
-				]);
+				$this->logger->error(
+					'An error occurred during handling request. Stopping HTTP server',
+					[
+						'source'   => 'server-command',
+						'type'     => 'error',
+						'exception' => [
+							'message' => $ex->getMessage(),
+							'code'    => $ex->getCode(),
+						],
+						'cmd'       => $this->getName(),
+					]
+				);
 
 				$this->eventLoop->stop();
 			});
@@ -154,10 +165,22 @@ class HttpServerCommand extends Console\Command\Command
 
 			if ($socketServer->getAddress() !== null) {
 				if ($socketServer instanceof Socket\SecureServer) {
-					$this->logger->info(sprintf('[FB:WEB_SERVER] Listening on "%s"', str_replace('tls:', 'https:', $socketServer->getAddress())));
+					$this->logger->info(
+						sprintf('Listening on "%s"', str_replace('tls:', 'https:', $socketServer->getAddress())),
+						[
+							'source'   => 'server-command',
+							'type'     => 'listen',
+						]
+					);
 
 				} else {
-					$this->logger->info(sprintf('[FB:WEB_SERVER] Listening on "%s"', str_replace('tcp:', 'http:', $socketServer->getAddress())));
+					$this->logger->info(
+						sprintf('Listening on "%s"', str_replace('tcp:', 'http:', $socketServer->getAddress())),
+						[
+							'source'   => 'server-command',
+							'type'     => 'listen',
+						]
+					);
 				}
 			}
 
@@ -165,26 +188,36 @@ class HttpServerCommand extends Console\Command\Command
 
 		} catch (Exceptions\TerminateException $ex) {
 			// Log error action reason
-			$this->logger->error('[FB:WEB_SERVER] HTTP server was forced to close', [
-				'exception' => [
-					'message' => $ex->getMessage(),
-					'code'    => $ex->getCode(),
-				],
-				'cmd'       => $this->getName(),
-			]);
+			$this->logger->error(
+				'HTTP server was forced to close',
+				[
+					'source'   => 'server-command',
+					'type'     => 'terminate',
+					'exception' => [
+						'message' => $ex->getMessage(),
+						'code'    => $ex->getCode(),
+					],
+					'cmd'       => $this->getName(),
+				]
+			);
 
 			$this->eventLoop->stop();
 
 		} catch (Throwable $ex) {
 			var_dump($ex->getMessage());
 			// Log error action reason
-			$this->logger->error('[FB:WEB_SERVER] An error occur & stopping server', [
-				'exception' => [
-					'message' => $ex->getMessage(),
-					'code'    => $ex->getCode(),
-				],
-				'cmd'       => $this->getName(),
-			]);
+			$this->logger->error(
+				'An unhandled error occurred. Stopping HTTP server',
+				[
+					'source'   => 'server-command',
+					'type'     => 'process',
+					'exception' => [
+						'message' => $ex->getMessage(),
+						'code'    => $ex->getCode(),
+					],
+					'cmd'       => $this->getName(),
+				]
+			);
 
 			$this->eventLoop->stop();
 		}
