@@ -20,6 +20,7 @@ use FastyBird\WebServerPlugin\Commands;
 use FastyBird\WebServerPlugin\Exceptions;
 use FastyBird\WebServerPlugin\Http;
 use FastyBird\WebServerPlugin\Middleware;
+use FastyBird\WebServerPlugin\Subscribers;
 use Fig\Http\Message\RequestMethodInterface;
 use IPub\SlimRouter;
 use Nette;
@@ -83,6 +84,9 @@ class WebServerPluginExtension extends DI\CompilerExtension
 				'webroot' => Schema\Expect::string(null)->nullable(),
 				'enabled' => Schema\Expect::bool(false),
 			]),
+			'server' => Schema\Expect::structure([
+				'command' => Schema\Expect::bool()->default(true),
+			]),
 			'cors'   => Schema\Expect::structure([
 				'enabled' => Schema\Expect::bool(false),
 				'allow'   => Schema\Expect::structure([
@@ -115,6 +119,12 @@ class WebServerPluginExtension extends DI\CompilerExtension
 		$builder = $this->getContainerBuilder();
 		/** @var stdClass $configuration */
 		$configuration = $this->getConfig();
+
+		// Subscribers
+		if (!$configuration->server->command) {
+			$builder->addDefinition($this->prefix('subscribers.initialize'), new DI\Definitions\ServiceDefinition())
+				->setType(Subscribers\ApplicationSubscriber::class);
+		}
 
 		$builder->addDefinition($this->prefix('routing.responseFactory'), new DI\Definitions\ServiceDefinition())
 			->setType(Http\ResponseFactory::class);
