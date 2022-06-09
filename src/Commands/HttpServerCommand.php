@@ -118,7 +118,7 @@ class HttpServerCommand extends Console\Command\Command
 		Output\OutputInterface $output
 	): int {
 		$this->logger->info(
-			'Starting HTTP server',
+			'Launching HTTP Server',
 			[
 				'source'   => 'web-server-plugin',
 				'type'     => 'command',

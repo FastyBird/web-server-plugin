@@ -35,10 +35,10 @@ final class HttpServerCommandTest extends BaseMockeryTestCase
 		$logger
 			->shouldReceive('info')
 			->withArgs([
-				'Starting HTTP server',
+				'Launching HTTP Server',
 				[
-					'source' => 'server-command',
-					'type'   => 'start',
+					'source' => 'web-server-plugin',
+					'type'   => 'command',
 				],
 			])
 			->times(1)
@@ -47,8 +47,8 @@ final class HttpServerCommandTest extends BaseMockeryTestCase
 			->withArgs([
 				'Listening on "http://127.0.0.1:8001"',
 				[
-					'source' => 'server-command',
-					'type'   => 'listen',
+					'source' => 'web-server-plugin',
+					'type'   => 'command',
 				],
 			])
 			->times(1);
