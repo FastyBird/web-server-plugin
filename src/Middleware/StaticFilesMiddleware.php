@@ -6,17 +6,17 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:WebServer!
+ * @package        FastyBird:WebServerPlugin!
  * @subpackage     Middleware
  * @since          0.1.0
  *
  * @date           08.05.21
  */
 
-namespace FastyBird\WebServer\Middleware;
+namespace FastyBird\WebServerPlugin\Middleware;
 
-use FastyBird\WebServer\Exceptions;
-use FastyBird\WebServer\Utils;
+use FastyBird\WebServerPlugin\Exceptions;
+use FastyBird\WebServerPlugin\Utils;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use React\Http\Message\Response;
@@ -24,7 +24,7 @@ use React\Http\Message\Response;
 /**
  * Public static files middleware
  *
- * @package        FastyBird:WebServer!
+ * @package        FastyBird:WebServerPlugin!
  * @subpackage     Middleware
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

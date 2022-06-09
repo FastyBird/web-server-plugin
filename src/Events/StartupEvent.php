@@ -6,21 +6,21 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:WebServer!
+ * @package        FastyBird:WebServerPlugin!
  * @subpackage     Events
  * @since          0.3.0
  *
  * @date           05.10.21
  */
 
-namespace FastyBird\WebServer\Events;
+namespace FastyBird\WebServerPlugin\Events;
 
 use Symfony\Contracts\EventDispatcher;
 
 /**
  * After message consumed event
  *
- * @package        FastyBird:WebServer!
+ * @package        FastyBird:WebServerPlugin!
  * @subpackage     Events
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

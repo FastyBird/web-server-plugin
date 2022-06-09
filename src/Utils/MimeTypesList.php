@@ -6,19 +6,19 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:WebServer!
+ * @package        FastyBird:WebServerPlugin!
  * @subpackage     Utils
  * @since          0.1.2
  *
  * @date           28.09.21
  */
 
-namespace FastyBird\WebServer\Utils;
+namespace FastyBird\WebServerPlugin\Utils;
 
 /**
  * List of known mime types
  *
- * @package        FastyBird:WebServer!
+ * @package        FastyBird:WebServerPlugin!
  * @subpackage     Utils
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

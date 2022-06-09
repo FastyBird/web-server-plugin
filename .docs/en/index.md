@@ -1,6 +1,6 @@
 # Quick start
 
-The purpose of this extension is to create php base web server for serving and handling API request and responses.
+The purpose of this plugin is to create php base web server for serving and handling API request and responses.
 
 ## Installation
 
@@ -10,14 +10,14 @@ The best way to install **fastybird/web-server** is using [Composer](http://getc
 composer require fastybird/web-server
 ```
 
-After that, you have to register extension in *config.neon*.
+After that, you have to register plugin in *config.neon*.
 
 ```neon
 extensions:
-    fbWebServer: FastyBird\WebServer\DI\WebServerExtension(%consoleMode%)
+    fbWebServerPlugin: FastyBird\WebServerPlugin\DI\WebServerPluginExtension(%consoleMode%)
 ```
 
-This extension is dependent on other extensions, and they have to be registered too
+This plugin is dependent on other extensions, and they have to be registered too
 
 ```neon
 extensions:
@@ -31,10 +31,10 @@ extensions:
 
 ## Configuration
 
-This extension has some configuration options:
+This plugin has some configuration options:
 
 ```neon
-fbWebServer:
+fbWebServerPlugin:
     static:
         webroot: /path/to/public/folder
         enabled: false
@@ -59,20 +59,17 @@ And settings for socket server extension:
 
 ## Application routes
 
-This extension has router collector services which will search for your custom routes providers and register routes to
-the server service.
-
-All what you have to do is create routes provider service and configure routes and their controllers:
+This plugin has router service. This service could be used to be injected in other services for registering routes.
+Or in case you want to implement automatic routes registration, you could use service **decorator**
 
 ```php
 namespace Your\CoolApp\Routing;
 
-use FastyBird\WebServer\Router;
 use IPub\SlimRouter\Routing;
 
 use Your\CoolApp\Controllers;
 
-class Routes implements Router\IRoutes
+class Routes
 {
 
     /** @var Controllers\ArticlesController */
@@ -107,6 +104,19 @@ class Routes implements Router\IRoutes
     }
 
 }
+```
+
+And in your configuration neon:
+
+```neon
+services:
+    appRoutes:
+        factory: Your\CoolApp\Routing\Routes
+
+decorator:
+    IPub\SlimRouter\Routing\Router:
+        setup:
+            @appRoutes::registerRoutes
 ```
 
 For more info how to write routes and controllers please
@@ -148,30 +158,36 @@ Each middleware have to be registered as a service with optional priority config
 
 ```neon
 services:
-    - {factory: Your\CoolApp\AccessControlMiddleware, tags: [middleware: {priority: 30}]}
+    accessControlMiddleware:
+        factory: Your\CoolApp\AccessControlMiddleware
 ```
 
-Extension will search for all middleware which are registered and register them to the router service. This type of
-middleware will be used for each route. But there could be cases where you want use your middleware for specific routes
-only.
+Registration of middlewares to router is done via decorator:
 
-It that case you could create middleware like shown above, but omit tag configuration in neon
+```neon
+decorator: 
+    IPub\SlimRouter\Routing\Router:
+        setup:
+            - addMiddleware(@accessControlMiddleware)
+```
+
+And if you have more middlewares, you could define their execution order. First registered is executed as last.
+
+This type of middleware will be used for each route. But there could be cases, where you want use your middleware for specific routes only.
 
 ```neon
 services:
     - {factory: Your\CoolApp\AccessControlMiddleware}
 ```
 
-Middleware will be registered as usual service and could be injected into router, where you could add it to specific
-route.
+Middleware will be registered as usual service and could be injected into router, where you could add it to specific route.
 
 ```php
 namespace Your\CoolApp\Routing;
 
-use FastyBird\WebServer\Router;
 use IPub\SlimRouter\Routing;
 
-class Routes implements Router\IRoutes
+class Routes
 {
     // ...
 
@@ -196,7 +212,7 @@ visit: [ipub/slim-router](https://github.com/iPublikuj/slim-router/blob/master/d
 ## Running server
 
 To be able to start server, you have to create an entrypoint for console. It is a simple script that loads the DI
-container and fires `FastyBird\WebServer\Application\Console::run`.
+container and fires `FastyBird\WebServerPlugin\Application\Console::run`.
 
 You can copy & paste it to your project, for example to `<app_root>/bin/console`.
 
@@ -214,7 +230,7 @@ require __DIR__ . '/../vendor/autoload.php';
 
 exit(Your\CoolApp\Bootstrap::boot()
     ->createContainer()
-    ->getByType(FastyBird\WebServer\Application\Console::class)
+    ->getByType(FastyBird\WebServerPlugin\Application\Console::class)
     ->run());
 ```
 
@@ -230,7 +246,7 @@ If you have any reason to use classic web server like [Apache](https://www.apach
 , this extension has solution for you.
 
 Steps to achieve this way is almost same as in console version. You have to create an entrypoint which will loads DI and
-fire `FastyBird\WebServer\Application\Application::run`
+fire `FastyBird\WebServerPlugin\Application\Application::run`
 
 You can copy & paste it to your project, for example to `<app_root>/www/index.php`.
 
@@ -241,7 +257,7 @@ require __DIR__ . '/../vendor/autoload.php';
 
 exit(Your\CoolApp\Bootstrap::boot()
     ->createContainer()
-    ->getByType(FastyBird\WebServer\Application\Application::class)
+    ->getByType(FastyBird\WebServerPlugin\Application\Application::class)
     ->run());
 ```
 

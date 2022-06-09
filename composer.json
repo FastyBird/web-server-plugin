@@ -1,5 +1,5 @@
 {
-  "name": "fastybird/web-server",
+  "name": "fastybird/web-server-plugin",
   "type": "library",
   "description": "Simple web server library with ReactPHP & Apache or Nginx support",
   "keywords": [
@@ -30,8 +30,8 @@
 
   "support": {
     "email": "code@fastybird.com",
-    "issues": "https://github.com/FastyBird/web-server/issues",
-    "source": "https://github.com/FastyBird/web-server"
+    "issues": "https://github.com/FastyBird/web-server-plugin/issues",
+    "source": "https://github.com/FastyBird/web-server-plugin"
   },
 
   "prefer-stable": true,
@@ -76,7 +76,7 @@
 
   "autoload": {
     "psr-4": {
-      "FastyBird\\WebServer\\": "src/"
+      "FastyBird\\WebServerPlugin\\": "src/"
     }
   },
 
@@ -88,7 +88,12 @@
   },
 
   "config": {
-    "sort-packages": true
+    "sort-packages": true,
+    "allow-plugins": {
+      "cweagans/composer-patches": true,
+      "dealerdirect/phpcodesniffer-composer-installer": true,
+      "phpstan/extension-installer": true
+    }
   },
 
   "extra": {

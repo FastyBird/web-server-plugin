@@ -6,16 +6,16 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:WebServer!
+ * @package        FastyBird:WebServerPlugin!
  * @subpackage     Middleware
  * @since          0.1.0
  *
  * @date           08.05.21
  */
 
-namespace FastyBird\WebServer\Middleware;
+namespace FastyBird\WebServerPlugin\Middleware;
 
-use FastyBird\WebServer\Events;
+use FastyBird\WebServerPlugin\Events;
 use IPub\SlimRouter\Routing;
 use Psr\EventDispatcher;
 use Psr\Http\Message\ResponseInterface;
@@ -24,7 +24,7 @@ use Psr\Http\Message\ServerRequestInterface;
 /**
  * Application router middleware
  *
- * @package        FastyBird:WebServer!
+ * @package        FastyBird:WebServerPlugin!
  * @subpackage     Middleware
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

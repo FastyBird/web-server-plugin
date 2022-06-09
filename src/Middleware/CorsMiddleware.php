@@ -6,14 +6,14 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:WebServer!
+ * @package        FastyBird:WebServerPlugin!
  * @subpackage     Middleware
  * @since          0.1.0
  *
  * @date           08.05.21
  */
 
-namespace FastyBird\WebServer\Middleware;
+namespace FastyBird\WebServerPlugin\Middleware;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -21,7 +21,7 @@ use Psr\Http\Message\ServerRequestInterface;
 /**
  * CORS middleware
  *
- * @package        FastyBird:WebServer!
+ * @package        FastyBird:WebServerPlugin!
  * @subpackage     Middleware
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

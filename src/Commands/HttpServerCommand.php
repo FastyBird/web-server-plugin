@@ -6,19 +6,19 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:WebServer!
+ * @package        FastyBird:WebServerPlugin!
  * @subpackage     Commands
  * @since          0.1.0
  *
  * @date           15.03.20
  */
 
-namespace FastyBird\WebServer\Commands;
+namespace FastyBird\WebServerPlugin\Commands;
 
 use FastyBird\SocketServerFactory;
-use FastyBird\WebServer\Events;
-use FastyBird\WebServer\Exceptions;
-use FastyBird\WebServer\Middleware;
+use FastyBird\WebServerPlugin\Events;
+use FastyBird\WebServerPlugin\Exceptions;
+use FastyBird\WebServerPlugin\Middleware;
 use Nette;
 use Psr\EventDispatcher;
 use Psr\Log;
@@ -33,7 +33,7 @@ use Throwable;
 /**
  * HTTP server command
  *
- * @package        FastyBird:WebServer!
+ * @package        FastyBird:WebServerPlugin!
  * @subpackage     Commands
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
@@ -120,8 +120,8 @@ class HttpServerCommand extends Console\Command\Command
 		$this->logger->info(
 			'Starting HTTP server',
 			[
-				'source'   => 'server-command',
-				'type'     => 'start',
+				'source'   => 'web-server-plugin',
+				'type'     => 'command',
 			]
 		);
 
@@ -148,8 +148,8 @@ class HttpServerCommand extends Console\Command\Command
 				$this->logger->error(
 					'An error occurred during handling request. Stopping HTTP server',
 					[
-						'source'   => 'server-command',
-						'type'     => 'error',
+						'source'   => 'web-server-plugin',
+						'type'     => 'command',
 						'exception' => [
 							'message' => $ex->getMessage(),
 							'code'    => $ex->getCode(),
@@ -168,8 +168,8 @@ class HttpServerCommand extends Console\Command\Command
 					$this->logger->info(
 						sprintf('Listening on "%s"', str_replace('tls:', 'https:', $socketServer->getAddress())),
 						[
-							'source'   => 'server-command',
-							'type'     => 'listen',
+							'source'   => 'web-server-plugin',
+							'type'     => 'command',
 						]
 					);
 
@@ -177,8 +177,8 @@ class HttpServerCommand extends Console\Command\Command
 					$this->logger->info(
 						sprintf('Listening on "%s"', str_replace('tcp:', 'http:', $socketServer->getAddress())),
 						[
-							'source'   => 'server-command',
-							'type'     => 'listen',
+							'source'   => 'web-server-plugin',
+							'type'     => 'command',
 						]
 					);
 				}
@@ -191,8 +191,8 @@ class HttpServerCommand extends Console\Command\Command
 			$this->logger->error(
 				'HTTP server was forced to close',
 				[
-					'source'   => 'server-command',
-					'type'     => 'terminate',
+					'source'   => 'web-server-plugin',
+					'type'     => 'command',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code'    => $ex->getCode(),
@@ -209,8 +209,8 @@ class HttpServerCommand extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred. Stopping HTTP server',
 				[
-					'source'   => 'server-command',
-					'type'     => 'process',
+					'source'   => 'web-server-plugin',
+					'type'     => 'command',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code'    => $ex->getCode(),

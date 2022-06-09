@@ -6,14 +6,14 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:WebServer!
+ * @package        FastyBird:WebServerPlugin!
  * @subpackage     Exceptions
  * @since          0.1.1
  *
  * @date           24.07.21
  */
 
-namespace FastyBird\WebServer\Exceptions;
+namespace FastyBird\WebServerPlugin\Exceptions;
 
 use InvalidArgumentException as PHPInvalidArgumentException;
 

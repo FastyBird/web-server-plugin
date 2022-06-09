@@ -1,26 +1,25 @@
 <?php declare(strict_types = 1);
 
 /**
- * WebServerExtension.php
+ * WebServerPluginExtension.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:WebServer!
+ * @package        FastyBird:WebServerPlugin!
  * @subpackage     DI
  * @since          0.1.0
  *
  * @date           21.03.20
  */
 
-namespace FastyBird\WebServer\DI;
+namespace FastyBird\WebServerPlugin\DI;
 
-use FastyBird\WebServer\Application;
-use FastyBird\WebServer\Commands;
-use FastyBird\WebServer\Exceptions;
-use FastyBird\WebServer\Http;
-use FastyBird\WebServer\Middleware;
-use FastyBird\WebServer\Router;
+use FastyBird\WebServerPlugin\Application;
+use FastyBird\WebServerPlugin\Commands;
+use FastyBird\WebServerPlugin\Exceptions;
+use FastyBird\WebServerPlugin\Http;
+use FastyBird\WebServerPlugin\Middleware;
 use Fig\Http\Message\RequestMethodInterface;
 use IPub\SlimRouter;
 use Nette;
@@ -31,15 +30,13 @@ use stdClass;
 /**
  * Simple web server extension container
  *
- * @package        FastyBird:WebServer!
+ * @package        FastyBird:WebServerPlugin!
  * @subpackage     DI
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class WebServerExtension extends DI\CompilerExtension
+class WebServerPluginExtension extends DI\CompilerExtension
 {
-
-	public const ROUTER_MIDDLEWARE_TAG = 'middleware';
 
 	/** @var bool */
 	private bool $cliMode;
@@ -63,7 +60,7 @@ class WebServerExtension extends DI\CompilerExtension
 	public static function register(
 		Nette\Configurator $config,
 		bool $cliMode = false,
-		string $extensionName = 'fbWebServer'
+		string $extensionName = 'fbWebServerPlugin'
 	): void {
 		$config->onCompile[] = function (
 			Nette\Configurator $config,
@@ -72,7 +69,7 @@ class WebServerExtension extends DI\CompilerExtension
 			$extensionName,
 			$cliMode
 		): void {
-			$compiler->addExtension($extensionName, new WebServerExtension($cliMode));
+			$compiler->addExtension($extensionName, new WebServerPluginExtension($cliMode));
 		};
 	}
 
@@ -123,7 +120,7 @@ class WebServerExtension extends DI\CompilerExtension
 			->setType(Http\ResponseFactory::class);
 
 		$builder->addDefinition($this->prefix('routing.router'), new DI\Definitions\ServiceDefinition())
-			->setType(Router\Router::class);
+			->setType(SlimRouter\Routing\Router::class);
 
 		$builder->addDefinition($this->prefix('command.server'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\HttpServerCommand::class);
@@ -156,59 +153,6 @@ class WebServerExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('application.classic'), new DI\Definitions\ServiceDefinition())
 			->setType(Application\Application::class);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function beforeCompile(): void
-	{
-		parent::beforeCompile();
-
-		$builder = $this->getContainerBuilder();
-
-		$routerServiceName = $builder->getByType(SlimRouter\Routing\IRouter::class, true);
-
-		if ($routerServiceName !== null) {
-			$routerService = $builder->getDefinition($routerServiceName);
-			assert($routerService instanceof DI\Definitions\ServiceDefinition);
-
-			/**
-			 * ROUTES
-			 */
-
-			$routesConfigurationServices = $builder->findByType(Router\IRoutes::class);
-
-			foreach ($routesConfigurationServices as $routesConfigurationService) {
-				if ($routesConfigurationService instanceof DI\Definitions\ServiceDefinition) {
-					$routerService->addSetup('registerRoutes', [$routesConfigurationService]);
-				}
-			}
-
-			$routerService->addSetup('injectRoutes');
-
-			/**
-			 * ROUTER MIDDLEWARE
-			 */
-
-			$middlewareServices = $builder->findByTag(self::ROUTER_MIDDLEWARE_TAG);
-
-			// Sort by priority
-			uasort($middlewareServices, function (array $a, array $b): int {
-				$p1 = $a['priority'] ?? 10;
-				$p2 = $b['priority'] ?? 10;
-
-				if ($p1 === $p2) {
-					return 0;
-				}
-
-				return ($p1 < $p2) ? -1 : 1;
-			});
-
-			foreach ($middlewareServices as $middlewareService => $middlewareServiceTags) {
-				$routerService->addSetup('addMiddleware', [$builder->getDefinition($middlewareService)]);
-			}
-		}
 	}
 
 }

@@ -6,21 +6,21 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:WebServer!
+ * @package        FastyBird:WebServerPlugin!
  * @subpackage     Application
  * @since          0.1.0
  *
  * @date           23.02.21
  */
 
-namespace FastyBird\WebServer\Application;
+namespace FastyBird\WebServerPlugin\Application;
 
 use Psr\Http\Message\ResponseInterface;
 
 /**
  * Base application interface
  *
- * @package        FastyBird:WebServer!
+ * @package        FastyBird:WebServerPlugin!
  * @subpackage     Application
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
