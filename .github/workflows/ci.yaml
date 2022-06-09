@@ -7,6 +7,8 @@ on :
   push :
     branches :
       - "master"
+    tags :
+      - v*
   schedule :
     - cron : "0 8 * * 1" # At 08:00 on Monday
 
@@ -168,13 +170,6 @@ jobs :
       - name : "Checkout"
         uses : "actions/checkout@v2"
 
-      - name : "Setup MySQL"
-        uses : "mirromutth/mysql-action@v1.1"
-        with :
-          mysql version : "5.7"
-          mysql database : "testdb"
-          mysql root password : "root"
-
       - name : "Setup PHP cache environment"
         id : "extcache"
         uses : "shivammathur/cache-extensions@v1"
@@ -241,13 +236,6 @@ jobs :
     steps :
       - name : "Checkout"
         uses : "actions/checkout@v2"
-
-      - name : "Setup MySQL"
-        uses : "mirromutth/mysql-action@v1.1"
-        with :
-          mysql version : "5.7"
-          mysql database : "testdb"
-          mysql root password : "root"
 
       - name : "Setup PHP cache environment"
         id : "extcache"

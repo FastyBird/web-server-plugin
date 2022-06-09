@@ -3,8 +3,8 @@
 namespace Tests\Cases;
 
 use FastyBird\SocketServerFactory;
-use FastyBird\WebServer\Commands;
-use FastyBird\WebServer\Middleware;
+use FastyBird\WebServerPlugin\Commands;
+use FastyBird\WebServerPlugin\Middleware;
 use Mockery;
 use Ninjify\Nunjuck\TestCase\BaseMockeryTestCase;
 use Psr\EventDispatcher;

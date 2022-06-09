@@ -2,10 +2,10 @@
 
 namespace Tests\Cases;
 
-use FastyBird\WebServer\Application;
-use FastyBird\WebServer\Commands;
-use FastyBird\WebServer\Http;
-use FastyBird\WebServer\Middleware;
+use FastyBird\WebServerPlugin\Application;
+use FastyBird\WebServerPlugin\Commands;
+use FastyBird\WebServerPlugin\Http;
+use FastyBird\WebServerPlugin\Middleware;
 use React\EventLoop;
 use Tester\Assert;
 
