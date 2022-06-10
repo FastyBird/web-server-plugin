@@ -204,7 +204,6 @@ class HttpServerCommand extends Console\Command\Command
 			$this->eventLoop->stop();
 
 		} catch (Throwable $ex) {
-			var_dump($ex->getMessage());
 			// Log error action reason
 			$this->logger->error(
 				'An unhandled error occurred. Stopping HTTP server',
