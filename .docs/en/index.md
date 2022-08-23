@@ -154,7 +154,7 @@ class AccessControlMiddleware implements MiddlewareInterface
 }
 ```
 
-Each middleware have to be registered as a service with optional priority configuration
+Each middleware have to be registered as a service
 
 ```neon
 services:
