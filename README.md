@@ -1,7 +1,7 @@
 # FastyBird web server plugin
 
-[![Build Status](https://badgen.net/github/checks/FastyBird/web-server-plugin/master?cache=300&style=flast-square)](https://github.com/FastyBird/web-server-plugin/actions)
-[![Licence](https://badgen.net/github/license/FastyBird/web-server-plugin?cache=300&style=flat-square)](https://github.com/FastyBird/web-server-plugin/blob/master/LICENSE.md)
+[![Build Status](https://badgen.net/github/checks/FastyBird/web-server-plugin/main?cache=300&style=flast-square)](https://github.com/FastyBird/web-server-plugin/actions)
+[![Licence](https://badgen.net/github/license/FastyBird/web-server-plugin?cache=300&style=flat-square)](https://github.com/FastyBird/web-server-plugin/blob/main/LICENSE.md)
 [![Code coverage](https://badgen.net/coveralls/c/github/FastyBird/web-server-plugin?cache=300&style=flast-square)](https://coveralls.io/r/FastyBird/web-server-plugin)
 
 ![PHP](https://badgen.net/packagist/php/FastyBird/web-server-plugin?cache=300&style=flast-square)
@@ -31,7 +31,7 @@ composer require fastybird/web-server-plugin
 ## Documentation
 
 Learn how to build handle http api requests
-in [documentation](https://github.com/FastyBird/web-server-plugin/blob/master/.docs/en/index.md).
+in [documentation](https://github.com/FastyBird/web-server-plugin/blob/main/.docs/en/index.md).
 
 ***
 Homepage [https://www.fastybird.com](https://www.fastybird.com) and
