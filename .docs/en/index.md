@@ -1,6 +1,6 @@
 # Quick start
 
-The purpose of this plugin is to create php base web server for serving and handling API request and responses.
+The purpose of this plugin is to create php based web server for serving and handling API request and responses.
 
 ## Installation
 
