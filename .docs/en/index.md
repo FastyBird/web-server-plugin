@@ -1,6 +1,6 @@
 # Quick start
 
-The purpose of this plugin is to create php base web server for serving and handling API request and responses.
+The purpose of this plugin is to create php based web server for serving and handling API request and responses.
 
 ***
 
@@ -116,7 +116,7 @@ decorator:
 ```
 
 For more info how to write routes and controllers please
-visit: [ipub/slim-router](https://github.com/iPublikuj/slim-router/blob/master/docs/en/index.md) package documentation
+visit: [ipub/slim-router](https://github.com/iPublikuj/slim-router/blob/main/docs/en/index.md) package documentation
 
 ## Custom middleware
 
@@ -150,7 +150,7 @@ class AccessControlMiddleware implements MiddlewareInterface
 }
 ```
 
-Each middleware have to be registered as a service with optional priority configuration
+Each middleware have to be registered as a service
 
 ```neon
 services:
@@ -203,7 +203,7 @@ class Routes
 ```
 
 For more info how to write middleware please
-visit: [ipub/slim-router](https://github.com/iPublikuj/slim-router/blob/master/docs/en/index.md) package documentation
+visit: [ipub/slim-router](https://github.com/iPublikuj/slim-router/blob/main/docs/en/index.md) package documentation
 
 ## Running server
 
