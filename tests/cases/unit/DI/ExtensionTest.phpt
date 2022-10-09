@@ -1,11 +1,12 @@
 <?php declare(strict_types = 1);
 
-namespace Tests\Cases;
+namespace Tests\Cases\Unit;
 
 use FastyBird\WebServerPlugin\Application;
 use FastyBird\WebServerPlugin\Commands;
 use FastyBird\WebServerPlugin\Http;
 use FastyBird\WebServerPlugin\Middleware;
+use FastyBird\WebServerPlugin\Server;
 use React\EventLoop;
 use Tester\Assert;
 
@@ -25,15 +26,17 @@ final class ExtensionTest extends BaseTestCase
 		Assert::notNull($container->getByType(Application\Console::class));
 		Assert::notNull($container->getByType(Application\Application::class));
 
-		Assert::notNull($container->getByType(Commands\HttpServerCommand::class));
+		Assert::notNull($container->getByType(Commands\HttpServer::class));
 
 		Assert::notNull($container->getByType(Http\ResponseFactory::class));
 
 		Assert::notNull($container->getByType(EventLoop\LoopInterface::class));
 
-		Assert::notNull($container->getByType(Middleware\CorsMiddleware::class));
-		Assert::notNull($container->getByType(Middleware\StaticFilesMiddleware::class));
-		Assert::notNull($container->getByType(Middleware\RouterMiddleware::class));
+		Assert::notNull($container->getByType(Middleware\Cors::class));
+		Assert::notNull($container->getByType(Middleware\StaticFiles::class));
+		Assert::notNull($container->getByType(Middleware\Router::class));
+
+		Assert::notNull($container->getByType(Server\Factory::class));
 	}
 
 }

@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * AbstractEntity.php
+ * Entity.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -15,32 +15,19 @@
 
 namespace FastyBird\WebServerPlugin\Http;
 
-abstract class AbstractEntity
+abstract class Entity
 {
 
-	/** @var mixed */
-	protected $data;
-
-	/**
-	 * @param mixed $data
-	 */
-	public function __construct($data = null)
+	public function __construct(protected mixed $data = null)
 	{
-		$this->data = $data;
 	}
 
-	/**
-	 * @return mixed
-	 */
-	public function getData()
+	public function getData(): mixed
 	{
 		return $this->data;
 	}
 
-	/**
-	 * @param mixed $data
-	 */
-	protected function setData($data): void
+	protected function setData(mixed $data): void
 	{
 		$this->data = $data;
 	}

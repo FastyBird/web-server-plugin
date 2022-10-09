@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * IException.php
+ * Terminate.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,14 +10,15 @@
  * @subpackage     Exceptions
  * @since          0.1.0
  *
- * @date           23.02.20
+ * @date           05.12.20
  */
 
 namespace FastyBird\WebServerPlugin\Exceptions;
 
+use Exception;
 use Throwable;
 
-interface IException extends Throwable
+class Terminate extends Exception implements Throwable
 {
 
 }

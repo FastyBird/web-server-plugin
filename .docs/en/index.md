@@ -2,6 +2,8 @@
 
 The purpose of this plugin is to create php base web server for serving and handling API request and responses.
 
+***
+
 ## Installation
 
 The best way to install **fastybird/web-server** is using [Composer](http://getcomposer.org/):
@@ -24,7 +26,6 @@ extensions:
     ...
     contributteConsole: Contributte\Console\DI\ConsoleExtension(%consoleMode%)
     contributteEvents: Contributte\EventDispatcher\DI\EventDispatcherExtension
-    fbSocketServerFactory: FastyBird\SocketServerFactory\DI\SocketServerFactoryExtension
 ```
 
 > For information how to configure these extensions please visit their doc pages
@@ -38,8 +39,6 @@ fbWebServerPlugin:
     static:
         webroot: /path/to/public/folder
         enabled: false
-
-fbSocketServerFactory:
     server:
         address: 127.0.0.1
         port: 8000
@@ -50,9 +49,6 @@ Where:
 
 - `static -> webroot` is path to public static files and this files could be served by this webserver
 - `static -> enabled` enable or disable serving static files support
-
-And settings for socket server extension:
-
 - `server -> address` is address where is server listening for incoming requests
 - `server -> port` is address port where is server listening for incoming requests
 - `server -> certificate` is path to your private certificate to enable SSL communication

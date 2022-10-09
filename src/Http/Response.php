@@ -17,6 +17,9 @@ namespace FastyBird\WebServerPlugin\Http;
 
 use FastyBird\WebServerPlugin\Exceptions;
 use IPub\SlimRouter;
+use function array_key_exists;
+use function func_num_args;
+use function sprintf;
 
 /**
  * Extended HTTP response
@@ -29,35 +32,29 @@ use IPub\SlimRouter;
 class Response extends SlimRouter\Http\Response
 {
 
-	/** @var mixed[] */
+	/** @var array<mixed> */
 	protected array $attributes = [];
 
 	/**
-	 * @return mixed[]
+	 * @return array<mixed>
 	 */
 	public function getAttributes(): array
 	{
 		return $this->attributes;
 	}
 
-	public function getEntity(): ?AbstractEntity
+	public function getEntity(): Entity|null
 	{
 		$entity = $this->getAttribute(ResponseAttributes::ATTR_ENTITY, null);
 
-		return $entity instanceof AbstractEntity ? $entity : null;
+		return $entity instanceof Entity ? $entity : null;
 	}
 
-	/**
-	 * @param string $name
-	 * @param mixed $default
-	 *
-	 * @return mixed
-	 */
-	public function getAttribute(string $name, $default = null)
+	public function getAttribute(string $name, mixed $default = null): mixed
 	{
 		if (!$this->hasAttribute($name)) {
 			if (func_num_args() < 2) {
-				throw new Exceptions\InvalidStateException(sprintf('No attribute "%s" found', $name));
+				throw new Exceptions\InvalidState(sprintf('No attribute "%s" found', $name));
 			}
 
 			return $default;
@@ -72,22 +69,17 @@ class Response extends SlimRouter\Http\Response
 	}
 
 	/**
-	 * @param AbstractEntity $entity
-	 *
 	 * @return static
 	 */
-	public function withEntity(AbstractEntity $entity): self
+	public function withEntity(Entity $entity): self
 	{
 		return $this->withAttribute(ResponseAttributes::ATTR_ENTITY, $entity);
 	}
 
 	/**
-	 * @param string $name
-	 * @param mixed $value
-	 *
 	 * @return static
 	 */
-	public function withAttribute(string $name, $value): self
+	public function withAttribute(string $name, mixed $value): self
 	{
 		$new = clone $this;
 		$new->attributes[$name] = $value;

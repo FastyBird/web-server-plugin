@@ -15,25 +15,20 @@
 
 namespace FastyBird\WebServerPlugin\Http;
 
-final class ScalarEntity extends AbstractEntity
+final class ScalarEntity extends Entity
 {
 
-	/**
-	 * @param mixed $value
-	 */
-	public function __construct($value)
+	public function __construct(mixed $value)
 	{
 		parent::__construct($value);
 	}
 
 	/**
-	 * @param mixed $value
-	 *
 	 * @return static
 	 */
-	public static function from($value): self
+	public static function from(mixed $value): self
 	{
-		return new static($value);
+		return new ScalarEntity($value);
 	}
 
 }

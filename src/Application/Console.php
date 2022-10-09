@@ -28,27 +28,20 @@ use Throwable;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Console implements IConsole
+class Console
 {
 
-	/** @var Application */
 	private Application $application;
 
-	public function __construct(
-		?Application $application = null
-	) {
+	public function __construct(Application|null $application = null)
+	{
 		$this->application = $application ?? new Application();
 	}
 
 	/**
-	 * @param Input\InputInterface|null $input
-	 * @param Output\OutputInterface|null $output
-	 *
-	 * @return int
-	 *
 	 * @throws Throwable
 	 */
-	public function run(?Input\InputInterface $input = null, ?Output\OutputInterface $output = null): int
+	public function run(Input\InputInterface|null $input = null, Output\OutputInterface|null $output = null): int
 	{
 		if ($input === null) {
 			$input = new Input\ArrayInput([

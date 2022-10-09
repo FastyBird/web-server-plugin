@@ -20,13 +20,16 @@ use FastyBird\WebServerPlugin\Commands;
 use FastyBird\WebServerPlugin\Exceptions;
 use FastyBird\WebServerPlugin\Http;
 use FastyBird\WebServerPlugin\Middleware;
-use FastyBird\WebServerPlugin\Subscribers;
+use FastyBird\WebServerPlugin\Server;
 use Fig\Http\Message\RequestMethodInterface;
 use IPub\SlimRouter;
 use Nette;
 use Nette\DI;
 use Nette\Schema;
 use stdClass;
+use function assert;
+use function func_num_args;
+use function sprintf;
 
 /**
  * Simple web server extension container
@@ -39,44 +42,32 @@ use stdClass;
 class WebServerPluginExtension extends DI\CompilerExtension
 {
 
-	/** @var bool */
-	private bool $cliMode;
+	public const NAME = 'fbWebServerPlugin';
 
-	public function __construct(bool $cliMode = false)
+	public function __construct(private readonly bool $cliMode = false)
 	{
 		if (func_num_args() <= 0) {
-			throw new Exceptions\InvalidArgumentException(sprintf('Provide CLI mode, e.q. %s(%%consoleMode%%).', self::class));
+			throw new Exceptions\InvalidArgument(sprintf('Provide CLI mode, e.q. %s(%%consoleMode%%).', self::class));
 		}
-
-		$this->cliMode = $cliMode;
 	}
 
-	/**
-	 * @param Nette\Configurator $config
-	 * @param bool $cliMode
-	 * @param string $extensionName
-	 *
-	 * @return void
-	 */
 	public static function register(
 		Nette\Configurator $config,
 		bool $cliMode = false,
-		string $extensionName = 'fbWebServerPlugin'
-	): void {
-		$config->onCompile[] = function (
+		string $extensionName = self::NAME,
+	): void
+	{
+		$config->onCompile[] = static function (
 			Nette\Configurator $config,
-			DI\Compiler $compiler
+			DI\Compiler $compiler,
 		) use (
 			$extensionName,
-			$cliMode
+			$cliMode,
 		): void {
 			$compiler->addExtension($extensionName, new WebServerPluginExtension($cliMode));
 		};
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function getConfigSchema(): Schema\Schema
 	{
 		return Schema\Expect::structure([
@@ -85,13 +76,16 @@ class WebServerPluginExtension extends DI\CompilerExtension
 				'enabled' => Schema\Expect::bool(false),
 			]),
 			'server' => Schema\Expect::structure([
-				'command' => Schema\Expect::bool()->default(true),
+				'address' => Schema\Expect::string('127.0.0.1'),
+				'port' => Schema\Expect::int(8_000),
+				'certificate' => Schema\Expect::string()
+					->nullable(),
 			]),
-			'cors'   => Schema\Expect::structure([
+			'cors' => Schema\Expect::structure([
 				'enabled' => Schema\Expect::bool(false),
-				'allow'   => Schema\Expect::structure([
-					'origin'      => Schema\Expect::string('*'),
-					'methods'     => Schema\Expect::arrayOf('string')
+				'allow' => Schema\Expect::structure([
+					'origin' => Schema\Expect::string('*'),
+					'methods' => Schema\Expect::arrayOf('string')
 						->default([
 							RequestMethodInterface::METHOD_GET,
 							RequestMethodInterface::METHOD_POST,
@@ -100,7 +94,7 @@ class WebServerPluginExtension extends DI\CompilerExtension
 							RequestMethodInterface::METHOD_OPTIONS,
 						]),
 					'credentials' => Schema\Expect::bool(true),
-					'headers'     => Schema\Expect::arrayOf('string')
+					'headers' => Schema\Expect::arrayOf('string')
 						->default([
 							'Content-Type',
 							'Authorization',
@@ -111,20 +105,11 @@ class WebServerPluginExtension extends DI\CompilerExtension
 		]);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function loadConfiguration(): void
 	{
 		$builder = $this->getContainerBuilder();
-		/** @var stdClass $configuration */
 		$configuration = $this->getConfig();
-
-		// Subscribers
-		if (!$configuration->server->command) {
-			$builder->addDefinition($this->prefix('subscribers.initialize'), new DI\Definitions\ServiceDefinition())
-				->setType(Subscribers\ApplicationSubscriber::class);
-		}
+		assert($configuration instanceof stdClass);
 
 		$builder->addDefinition($this->prefix('routing.responseFactory'), new DI\Definitions\ServiceDefinition())
 			->setType(Http\ResponseFactory::class);
@@ -133,26 +118,31 @@ class WebServerPluginExtension extends DI\CompilerExtension
 			->setType(SlimRouter\Routing\Router::class);
 
 		$builder->addDefinition($this->prefix('command.server'), new DI\Definitions\ServiceDefinition())
-			->setType(Commands\HttpServerCommand::class);
-
-		// Webserver middlewares
-		$builder->addDefinition($this->prefix('middlewares.cors'), new DI\Definitions\ServiceDefinition())
-			->setType(Middleware\CorsMiddleware::class)
+			->setType(Commands\HttpServer::class)
 			->setArguments([
-				'enabled'          => $configuration->cors->enabled,
-				'allowOrigin'      => $configuration->cors->allow->origin,
-				'allowMethods'     => $configuration->cors->allow->methods,
+				'serverAddress' => $configuration->server->address,
+				'serverPort' => $configuration->server->port,
+				'serverCertificate' => $configuration->server->certificate,
+			]);
+
+		// Web server middlewares
+		$builder->addDefinition($this->prefix('middlewares.cors'), new DI\Definitions\ServiceDefinition())
+			->setType(Middleware\Cors::class)
+			->setArguments([
+				'enabled' => $configuration->cors->enabled,
+				'allowOrigin' => $configuration->cors->allow->origin,
+				'allowMethods' => $configuration->cors->allow->methods,
 				'allowCredentials' => $configuration->cors->allow->credentials,
-				'allowHeaders'     => $configuration->cors->allow->headers,
+				'allowHeaders' => $configuration->cors->allow->headers,
 			]);
 
 		$builder->addDefinition($this->prefix('middlewares.staticFiles'), new DI\Definitions\ServiceDefinition())
-			->setType(Middleware\StaticFilesMiddleware::class)
+			->setType(Middleware\StaticFiles::class)
 			->setArgument('publicRoot', $configuration->static->webroot)
 			->setArgument('enabled', $configuration->static->enabled);
 
 		$builder->addDefinition($this->prefix('middlewares.router'), new DI\Definitions\ServiceDefinition())
-			->setType(Middleware\RouterMiddleware::class);
+			->setType(Middleware\Router::class);
 
 		// Applications
 
@@ -163,6 +153,11 @@ class WebServerPluginExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('application.classic'), new DI\Definitions\ServiceDefinition())
 			->setType(Application\Application::class);
+
+		// Web server factory
+
+		$builder->addDefinition($this->prefix('server.factory'), new DI\Definitions\ServiceDefinition())
+			->setType(Server\Factory::class);
 	}
 
 }

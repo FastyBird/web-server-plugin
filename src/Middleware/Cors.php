@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * RouterMiddleware.php
+ * Router.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -17,6 +17,7 @@ namespace FastyBird\WebServerPlugin\Middleware;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use function implode;
 
 /**
  * CORS middleware
@@ -26,43 +27,21 @@ use Psr\Http\Message\ServerRequestInterface;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class CorsMiddleware
+final class Cors
 {
 
-	/** @var bool */
-	private bool $enabled;
-
-	/** @var string */
-	private string $allowOrigin;
-
-	/** @var string[] */
-	private array $allowMethods;
-
-	/** @var bool */
-	private bool $allowCredentials;
-
-	/** @var string[] */
-	private array $allowHeaders;
-
 	/**
-	 * @param bool $enabled
-	 * @param string $allowOrigin
-	 * @param string[] $allowMethods
-	 * @param bool $allowCredentials
-	 * @param string[] $allowHeaders
+	 * @param array<string> $allowMethods
+	 * @param array<string> $allowHeaders
 	 */
 	public function __construct(
-		bool $enabled,
-		string $allowOrigin,
-		array $allowMethods,
-		bool $allowCredentials,
-		array $allowHeaders
-	) {
-		$this->enabled = $enabled;
-		$this->allowOrigin = $allowOrigin;
-		$this->allowMethods = $allowMethods;
-		$this->allowCredentials = $allowCredentials;
-		$this->allowHeaders = $allowHeaders;
+		private readonly bool $enabled,
+		private readonly string $allowOrigin,
+		private readonly array $allowMethods,
+		private readonly bool $allowCredentials,
+		private readonly array $allowHeaders,
+	)
+	{
 	}
 
 	public function __invoke(ServerRequestInterface $request, callable $next): ResponseInterface

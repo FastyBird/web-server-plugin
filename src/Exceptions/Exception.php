@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * FileNotFoundException.php
+ * Exception.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,14 +10,14 @@
  * @subpackage     Exceptions
  * @since          0.1.0
  *
- * @date           08.05.21
+ * @date           23.02.20
  */
 
 namespace FastyBird\WebServerPlugin\Exceptions;
 
-use RuntimeException;
+use Throwable;
 
-class FileNotFoundException extends RuntimeException implements IException
+interface Exception extends Throwable
 {
 
 }

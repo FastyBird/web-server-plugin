@@ -22,6 +22,12 @@ use Psr\EventDispatcher;
 use Psr\Http\Message\ResponseInterface;
 use Sunrise\Http\ServerRequest\ServerRequestFactory;
 use Throwable;
+use function header;
+use function in_array;
+use function sprintf;
+use function str_replace;
+use function strtolower;
+use function ucwords;
 
 /**
  * Base application service
@@ -31,7 +37,7 @@ use Throwable;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Application implements IApplication
+class Application
 {
 
 	use Nette\SmartObject;
@@ -40,45 +46,27 @@ class Application implements IApplication
 		'content-type',
 	];
 
-	/** @var Routing\IRouter */
-	private Routing\IRouter $router;
-
-	/** @var EventDispatcher\EventDispatcherInterface|null */
-	private ?EventDispatcher\EventDispatcherInterface $dispatcher;
-
 	public function __construct(
-		Routing\IRouter $router,
-		?EventDispatcher\EventDispatcherInterface $dispatcher = null
-	) {
-		$this->router = $router;
-		$this->dispatcher = $dispatcher;
+		private readonly Routing\IRouter $router,
+		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
+	)
+	{
 	}
 
 	/**
 	 * Dispatch application in middleware cycle!
 	 *
-	 * @return string|int|bool|void|ResponseInterface|null
-	 *
 	 * @throws Throwable
 	 */
-	public function run()
+	public function run(): ResponseInterface
 	{
 		$request = ServerRequestFactory::fromGlobals();
 
-		if ($this->dispatcher !== null) {
-			$this->dispatcher->dispatch(new Events\RequestEvent($request));
-		}
+		$this->dispatcher?->dispatch(new Events\Request($request));
 
-		try {
-			$response = $this->router->handle($request);
+		$response = $this->router->handle($request);
 
-		} catch (Throwable $e) {
-			throw $e;
-		}
-
-		if ($this->dispatcher !== null) {
-			$this->dispatcher->dispatch(new Events\ResponseEvent($request, $response));
-		}
+		$this->dispatcher?->dispatch(new Events\Response($request, $response));
 
 		$this->sendStatus($response);
 		$this->sendHeaders($response);
@@ -87,11 +75,6 @@ class Application implements IApplication
 		return $response;
 	}
 
-	/**
-	 * @param ResponseInterface $response
-	 *
-	 * @return void
-	 */
 	protected function sendStatus(ResponseInterface $response): void
 	{
 		$version = $response->getProtocolVersion();
@@ -101,11 +84,6 @@ class Application implements IApplication
 		header(sprintf('HTTP/%s %s %s', $version, $status, $phrase));
 	}
 
-	/**
-	 * @param ResponseInterface $response
-	 *
-	 * @return void
-	 */
 	protected function sendHeaders(ResponseInterface $response): void
 	{
 		foreach ($response->getHeaders() as $name => $values) {
@@ -114,9 +92,7 @@ class Application implements IApplication
 	}
 
 	/**
-	 * @param string[] $values
-	 *
-	 * @return void
+	 * @param array<string> $values
 	 */
 	protected function sendHeader(string $name, array $values): void
 	{
@@ -131,18 +107,13 @@ class Application implements IApplication
 		}
 	}
 
-	/**
-	 * @param ResponseInterface $response
-	 *
-	 * @return void
-	 */
 	protected function sendBody(ResponseInterface $response): void
 	{
 		$stream = $response->getBody();
 		$stream->rewind();
 
 		while (!$stream->eof()) {
-			echo $stream->read(8192);
+			echo $stream->read(8_192);
 		}
 	}
 

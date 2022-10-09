@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ResponseEvent.php
+ * Response.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -27,34 +27,21 @@ use Symfony\Contracts\EventDispatcher;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class ResponseEvent extends EventDispatcher\Event
+class Response extends EventDispatcher\Event
 {
 
-	/** @var ServerRequestInterface */
-	private ServerRequestInterface $request;
-
-	/** @var ResponseInterface */
-	private ResponseInterface $response;
-
 	public function __construct(
-		ServerRequestInterface $request,
-		ResponseInterface $response
-	) {
-		$this->request = $request;
-		$this->response = $response;
+		private readonly ServerRequestInterface $request,
+		private readonly ResponseInterface $response,
+	)
+	{
 	}
 
-	/**
-	 * @return ServerRequestInterface
-	 */
 	public function getRequest(): ServerRequestInterface
 	{
 		return $this->request;
 	}
 
-	/**
-	 * @return ResponseInterface
-	 */
 	public function getResponse(): ResponseInterface
 	{
 		return $this->response;

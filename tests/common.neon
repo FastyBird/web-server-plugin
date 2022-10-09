@@ -1,17 +1,20 @@
 #
-# DI configuration
+# Plugin DI configuration
 #
-# @license      More in LICENSE.md
-# @copyright    https://www.fastybird.com
-# @author       Adam Kadlec <adam.kadlec@fastybird.com>
-# @package      FastyBird:WebServer!
-# @subpackage   config
-# @since        0.1.0
+# @license		More in license.md
+# @copyright	https://www.fastybird.com
+# @author		Adam Kadlec <adam.kadlec@fastybird.com>
+# @package		FastyBird:RedisDbStoragePlugin!
+# @subpackage	config
+# @since		0.1.0
 #
-# @date         19.07.20
+# @date			19.07.20
 
 php:
     date.timezone: Europe/Prague
 
-extensions:
-    fbSocketServerFactory : FastyBird\SocketServerFactory\DI\SocketServerFactoryExtension
+services:
+    - {
+      create: React\EventLoop\Factory::create()
+      type: React\EventLoop\LoopInterface
+    }

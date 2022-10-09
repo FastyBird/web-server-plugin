@@ -19,6 +19,7 @@ interface ResponseAttributes
 {
 
 	public const ATTR_ENTITY = '__entity__';
+
 	public const ATTR_TOTAL_COUNT = '__total_records_count__';
 
 }

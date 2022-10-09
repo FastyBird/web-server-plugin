@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * RouterMiddleware.php
+ * Router.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -29,34 +29,23 @@ use Psr\Http\Message\ServerRequestInterface;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class RouterMiddleware
+final class Router
 {
 
-	/** @var EventDispatcher\EventDispatcherInterface|null */
-	private ?EventDispatcher\EventDispatcherInterface $dispatcher;
-
-	/** @var Routing\IRouter */
-	private Routing\IRouter $router;
-
 	public function __construct(
-		Routing\IRouter $router,
-		?EventDispatcher\EventDispatcherInterface $dispatcher = null
-	) {
-		$this->router = $router;
-		$this->dispatcher = $dispatcher;
+		private readonly Routing\IRouter $router,
+		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
+	)
+	{
 	}
 
 	public function __invoke(ServerRequestInterface $request): ResponseInterface
 	{
-		if ($this->dispatcher !== null) {
-			$this->dispatcher->dispatch(new Events\RequestEvent($request));
-		}
+		$this->dispatcher?->dispatch(new Events\Request($request));
 
 		$response = $this->router->handle($request);
 
-		if ($this->dispatcher !== null) {
-			$this->dispatcher->dispatch(new Events\ResponseEvent($request, $response));
-		}
+		$this->dispatcher?->dispatch(new Events\Response($request, $response));
 
 		return $response;
 	}

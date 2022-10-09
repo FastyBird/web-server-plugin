@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * StartupEvent.php
+ * Request.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -15,17 +15,27 @@
 
 namespace FastyBird\WebServerPlugin\Events;
 
+use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Contracts\EventDispatcher;
 
 /**
- * After message consumed event
+ * Http request event
  *
  * @package        FastyBird:WebServerPlugin!
  * @subpackage     Events
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class StartupEvent extends EventDispatcher\Event
+class Request extends EventDispatcher\Event
 {
+
+	public function __construct(private readonly ServerRequestInterface $request)
+	{
+	}
+
+	public function getRequest(): ServerRequestInterface
+	{
+		return $this->request;
+	}
 
 }

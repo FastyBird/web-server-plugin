@@ -1,10 +1,10 @@
 <?php declare(strict_types = 1);
 
-namespace Tests\Cases;
+namespace Tests\Cases\Unit;
 
-use FastyBird\SocketServerFactory;
 use FastyBird\WebServerPlugin\Commands;
 use FastyBird\WebServerPlugin\Middleware;
+use FastyBird\WebServerPlugin\Server;
 use Mockery;
 use Ninjify\Nunjuck\TestCase\BaseMockeryTestCase;
 use Psr\EventDispatcher;
@@ -48,7 +48,7 @@ final class HttpServerCommandTest extends BaseMockeryTestCase
 				'Listening on "http://127.0.0.1:8001"',
 				[
 					'source' => 'web-server-plugin',
-					'type'   => 'command',
+					'type'   => 'factory',
 				],
 			])
 			->times(1);
@@ -65,38 +65,31 @@ final class HttpServerCommandTest extends BaseMockeryTestCase
 			->shouldReceive('dispatch')
 			->times(1);
 
-		$socketServer = Mockery::mock(Socket\ServerInterface::class);
-		$socketServer
-			->shouldReceive('getAddress')
-			->andReturn('http://127.0.0.1:8001')
-			->times(2)
-			->getMock()
-			->shouldReceive('on');
+		$corsMiddleware = Mockery::mock(Middleware\Cors::class);
 
-		$socketServerFactory = Mockery::mock(SocketServerFactory\SocketServerFactory::class);
-		$socketServerFactory
-			->shouldReceive('create')
-			->andReturn($socketServer)
-			->times(1);
+		$staticFilesMiddleware = Mockery::mock(Middleware\StaticFiles::class);
 
-		$corsFilesMiddleware = Mockery::mock(Middleware\CorsMiddleware::class);
+		$routerMiddleware = Mockery::mock(Middleware\Router::class);
 
-		$staticFilesMiddleware = Mockery::mock(Middleware\StaticFilesMiddleware::class);
-
-		$routerMiddleware = Mockery::mock(Middleware\RouterMiddleware::class);
-
-		$application = new Application();
-		$application->add(new Commands\HttpServerCommand(
-			$corsFilesMiddleware,
+		$serverFactory = new Server\Factory(
+			$corsMiddleware,
 			$staticFilesMiddleware,
 			$routerMiddleware,
-			$socketServerFactory,
+			$eventLoop,
+			$logger,
+		);
+
+		$application = new Application();
+		$application->add(new Commands\HttpServer(
+			'127.0.0.1',
+			8_001,
+			$serverFactory,
 			$eventLoop,
 			$eventDispatcher,
 			$logger
 		));
 
-		$command = $application->get('fb:web-server:start');
+		$command = $application->get(Commands\HttpServer::NAME);
 
 		$commandTester = new CommandTester($command);
 		$commandTester->execute([]);

@@ -31,13 +31,11 @@ use Psr\Http\Message\ResponseInterface;
 class ResponseFactory implements ResponseFactoryInterface
 {
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function createResponse(
 		int $code = StatusCodeInterface::STATUS_OK,
-		string $reasonPhrase = ''
-	): ResponseInterface {
+		string $reasonPhrase = '',
+	): ResponseInterface
+	{
 		$stream = Stream::fromResourceUri('php://temp', 'w+b');
 
 		return new Response($code, $stream, [], ['reason' => $reasonPhrase]);

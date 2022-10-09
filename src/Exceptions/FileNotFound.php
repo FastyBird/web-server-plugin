@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * InvalidStateException.php
+ * FileNotFound.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,14 +10,14 @@
  * @subpackage     Exceptions
  * @since          0.1.0
  *
- * @date           10.03.20
+ * @date           08.05.21
  */
 
 namespace FastyBird\WebServerPlugin\Exceptions;
 
 use RuntimeException;
 
-class InvalidStateException extends RuntimeException implements IException
+class FileNotFound extends RuntimeException implements Exception
 {
 
 }
