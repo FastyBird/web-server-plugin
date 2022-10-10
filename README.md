@@ -9,6 +9,8 @@
 [![Latest stable](https://badgen.net/packagist/v/FastyBird/web-server-plugin/latest?cache=300&style=flast-square)](https://packagist.org/packages/FastyBird/web-server-plugin)
 [![PHPStan](https://img.shields.io/badge/PHPStan-enabled-brightgreen.svg?style=flat-square)](https://github.com/phpstan/phpstan)
 
+***
+
 ## What is FastyBird web server plugin?
 
 This is a plugin for [FastyBird IoT](https://www.fastybird.com) ecosystem which is implementing http server based

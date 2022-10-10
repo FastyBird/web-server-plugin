@@ -6,10 +6,10 @@ The purpose of this plugin is to create php based web server for serving and han
 
 ## Installation
 
-The best way to install **fastybird/web-server** is using [Composer](http://getcomposer.org/):
+The best way to install **fastybird/web-server-plugin** is using [Composer](http://getcomposer.org/):
 
 ```sh
-composer require fastybird/web-server
+composer require fastybird/web-server-plugin
 ```
 
 After that, you have to register plugin in *config.neon*.
@@ -270,4 +270,4 @@ create basic token based authentication and authorization.
 
 ***
 Homepage [https://www.fastybird.com](https://www.fastybird.com) and
-repository [https://github.com/FastyBird/web-server](https://github.com/FastyBird/web-server).
+repository [https://github.com/FastyBird/web-server-pluging](https://github.com/FastyBird/web-server-plugin).
