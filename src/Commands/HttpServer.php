@@ -108,6 +108,10 @@ class HttpServer extends Console\Command\Command
 				}
 			}
 
+			$socketServer->on('error', function (Throwable $ex): void {
+				$this->dispatcher?->dispatch(new Events\Error($ex));
+			});
+
 			$this->serverFactory->create($socketServer);
 
 			$this->eventLoop->run();

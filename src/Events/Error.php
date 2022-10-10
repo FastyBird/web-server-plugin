@@ -1,31 +1,41 @@
 <?php declare(strict_types = 1);
 
 /**
- * Startup.php
+ * Error.php
  *
- * @license        More in LICENSE.md
+ * @license        More in license.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:WebServerPlugin!
  * @subpackage     Events
- * @since          0.3.0
+ * @since          0.2.0
  *
- * @date           05.10.21
+ * @date           09.10.21
  */
 
 namespace FastyBird\WebServerPlugin\Events;
 
 use Symfony\Contracts\EventDispatcher;
+use Throwable;
 
 /**
- * When web server started
+ * Connection error event
  *
  * @package        FastyBird:WebServerPlugin!
  * @subpackage     Events
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Startup extends EventDispatcher\Event
+class Error extends EventDispatcher\Event
 {
+
+	public function __construct(private readonly Throwable $ex)
+	{
+	}
+
+	public function getException(): Throwable
+	{
+		return $this->ex;
+	}
 
 }
