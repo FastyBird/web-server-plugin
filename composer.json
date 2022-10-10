@@ -1,7 +1,7 @@
 {
   "name" : "fastybird/web-server-plugin",
   "type" : "library",
-  "description" : "Simple web server library with ReactPHP & Apache or Nginx support",
+  "description" : "FastyBird IoT simple web server plugin with ReactPHP & Apache or Nginx support",
   "keywords" : [
     "fastybird",
     "fb",
