@@ -11,9 +11,9 @@
 
 ***
 
-## What is FastyBird web server plugin?
+## What is web server plugin?
 
-This is a plugin for [FastyBird IoT](https://www.fastybird.com) ecosystem which is implementing http server based
+This is a plugin for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem which is implementing http server based
 on [ReactPHP](https://github.com/reactphp/http).
 
 ### Features:
@@ -54,7 +54,7 @@ For release info check [release page](https://github.com/FastyBird/web-server-pl
 		<tr>
 			<td align="center">
 				<a href="https://github.com/akadlec">
-					<img width="80" height="80" src="https://avatars3.githubusercontent.com/u/1866672?s=460&amp;v=4">
+					<img alt="akadlec" width="80" height="80" src="https://avatars3.githubusercontent.com/u/1866672?s=460&amp;v=4" />
 				</a>
 				<br>
 				<a href="https://github.com/akadlec">Adam Kadlec</a>
