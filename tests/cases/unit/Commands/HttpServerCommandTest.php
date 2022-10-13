@@ -5,7 +5,6 @@ namespace Tests\Cases\Unit\Commands;
 use FastyBird\WebServerPlugin\Commands;
 use FastyBird\WebServerPlugin\Middleware;
 use FastyBird\WebServerPlugin\Server;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\EventDispatcher;
 use Psr\Log;
