@@ -15,6 +15,8 @@
 
 namespace FastyBird\WebServerPlugin\Middleware;
 
+use Closure;
+use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use function implode;
@@ -44,6 +46,11 @@ final class Cors
 	{
 	}
 
+	/**
+	 * @phpstan-param Closure(ServerRequestInterface $request): ResponseInterface $next
+	 *
+	 * @throws InvalidArgumentException
+	 */
 	public function __invoke(ServerRequestInterface $request, callable $next): ResponseInterface
 	{
 		$response = $next($request);

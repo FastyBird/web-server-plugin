@@ -15,8 +15,10 @@
 
 namespace FastyBird\WebServerPlugin\Middleware;
 
+use Closure;
 use FastyBird\WebServerPlugin\Exceptions;
 use FastyBird\WebServerPlugin\Utils;
+use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use React\Http\Message\Response;
@@ -59,6 +61,12 @@ final class StaticFiles
 		return 'text/plain';
 	}
 
+	/**
+	 * @phpstan-param Closure(ServerRequestInterface $request): ResponseInterface $next
+	 *
+	 * @throws InvalidArgumentException
+	 * @throws Exceptions\FileNotFound
+	 */
 	public function __invoke(ServerRequestInterface $request, callable $next): ResponseInterface
 	{
 		if ($this->publicRoot === null || !$this->enabled) {

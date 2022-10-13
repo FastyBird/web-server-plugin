@@ -20,8 +20,8 @@ use IPub\SlimRouter\Routing;
 use Nette;
 use Psr\EventDispatcher;
 use Psr\Http\Message\ResponseInterface;
+use RuntimeException;
 use Sunrise\Http\ServerRequest\ServerRequestFactory;
-use Throwable;
 use function header;
 use function in_array;
 use function sprintf;
@@ -56,7 +56,7 @@ class Application
 	/**
 	 * Dispatch application in middleware cycle!
 	 *
-	 * @throws Throwable
+	 * @throws RuntimeException
 	 */
 	public function run(): ResponseInterface
 	{
@@ -107,6 +107,9 @@ class Application
 		}
 	}
 
+	/**
+	 * @throws RuntimeException
+	 */
 	protected function sendBody(ResponseInterface $response): void
 	{
 		$stream = $response->getBody();

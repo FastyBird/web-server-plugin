@@ -63,6 +63,9 @@ class HttpServer extends Console\Command\Command
 		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
+	/**
+	 * @throws Console\Exception\InvalidArgumentException
+	 */
 	protected function configure(): void
 	{
 		parent::configure();

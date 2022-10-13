@@ -44,6 +44,9 @@ class WebServerPluginExtension extends DI\CompilerExtension
 
 	public const NAME = 'fbWebServerPlugin';
 
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 */
 	public function __construct(private readonly bool $cliMode = false)
 	{
 		if (func_num_args() <= 0) {

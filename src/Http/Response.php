@@ -43,6 +43,9 @@ class Response extends SlimRouter\Http\Response
 		return $this->attributes;
 	}
 
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
 	public function getEntity(): Entity|null
 	{
 		$entity = $this->getAttribute(ResponseAttributes::ATTR_ENTITY, null);
@@ -50,6 +53,9 @@ class Response extends SlimRouter\Http\Response
 		return $entity instanceof Entity ? $entity : null;
 	}
 
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
 	public function getAttribute(string $name, mixed $default = null): mixed
 	{
 		if (!$this->hasAttribute($name)) {
