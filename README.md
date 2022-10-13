@@ -3,6 +3,7 @@
 [![Build Status](https://badgen.net/github/checks/FastyBird/web-server-plugin/main?cache=300&style=flast-square)](https://github.com/FastyBird/web-server-plugin/actions)
 [![Licence](https://badgen.net/github/license/FastyBird/web-server-plugin?cache=300&style=flat-square)](https://github.com/FastyBird/web-server-plugin/blob/main/LICENSE.md)
 [![Code coverage](https://badgen.net/coveralls/c/github/FastyBird/web-server-plugin?cache=300&style=flast-square)](https://coveralls.io/r/FastyBird/web-server-plugin)
+[![Mutation testing](https://img.shields.io/endpoint?style=flat-square&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2FFastyBird%2Fweb-server-plugin%2Fmain)](https://dashboard.stryker-mutator.io/reports/github.com/FastyBird/web-server-plugin/main)
 
 ![PHP](https://badgen.net/packagist/php/FastyBird/web-server-plugin?cache=300&style=flast-square)
 [![Downloads total](https://badgen.net/packagist/dt/FastyBird/web-server-plugin?cache=300&style=flast-square)](https://packagist.org/packages/FastyBird/web-server-plugin)
