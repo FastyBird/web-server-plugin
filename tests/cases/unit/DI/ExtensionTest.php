@@ -7,30 +7,34 @@ use FastyBird\WebServerPlugin\Commands;
 use FastyBird\WebServerPlugin\Http;
 use FastyBird\WebServerPlugin\Middleware;
 use FastyBird\WebServerPlugin\Server;
+use Nette;
 use React\EventLoop;
 use Tests\Cases\Unit\BaseTestCase;
 
 final class ExtensionTest extends BaseTestCase
 {
 
+	/**
+	 * @throws Nette\DI\MissingServiceException
+	 */
 	public function testCompilersServices(): void
 	{
 		$container = $this->createContainer();
 
-		$this->assertNotNull($container->getByType(Application\Console::class));
-		$this->assertNotNull($container->getByType(Application\Application::class));
+		self::assertNotNull($container->getByType(Application\Console::class, false));
+		self::assertNotNull($container->getByType(Application\Application::class, false));
 
-		$this->assertNotNull($container->getByType(Commands\HttpServer::class));
+		self::assertNotNull($container->getByType(Commands\HttpServer::class, false));
 
-		$this->assertNotNull($container->getByType(Http\ResponseFactory::class));
+		self::assertNotNull($container->getByType(Http\ResponseFactory::class, false));
 
-		$this->assertNotNull($container->getByType(EventLoop\LoopInterface::class));
+		self::assertNotNull($container->getByType(EventLoop\LoopInterface::class, false));
 
-		$this->assertNotNull($container->getByType(Middleware\Cors::class));
-		$this->assertNotNull($container->getByType(Middleware\StaticFiles::class));
-		$this->assertNotNull($container->getByType(Middleware\Router::class));
+		self::assertNotNull($container->getByType(Middleware\Cors::class, false));
+		self::assertNotNull($container->getByType(Middleware\StaticFiles::class, false));
+		self::assertNotNull($container->getByType(Middleware\Router::class, false));
 
-		$this->assertNotNull($container->getByType(Server\Factory::class));
+		self::assertNotNull($container->getByType(Server\Factory::class, false));
 	}
 
 }

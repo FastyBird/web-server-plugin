@@ -5,17 +5,23 @@ namespace Tests\Cases\Unit\Commands;
 use FastyBird\WebServerPlugin\Commands;
 use FastyBird\WebServerPlugin\Middleware;
 use FastyBird\WebServerPlugin\Server;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\EventDispatcher;
 use Psr\Log;
 use React\EventLoop;
 use React\Promise;
+use Symfony\Component\Console;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
 final class HttpServerCommandTest extends TestCase
 {
 
+	/**
+	 * @throws Console\Exception\LogicException
+	 * @throws Console\Exception\CommandNotFoundException
+	 */
 	public function testExecute(): void
 	{
 		$promise = $this->createMock(Promise\PromiseInterface::class);
@@ -25,7 +31,7 @@ final class HttpServerCommandTest extends TestCase
 
 		$logger = $this->createMock(Log\LoggerInterface::class);
 		$logger
-			->expects($this->exactly(2))
+			->expects(self::exactly(2))
 			->method('info')
 			->withConsecutive(
 				[
@@ -52,7 +58,7 @@ final class HttpServerCommandTest extends TestCase
 
 		$eventDispatcher = $this->createMock(EventDispatcher\EventDispatcherInterface::class);
 		$eventDispatcher
-			->expects($this->exactly(1))
+			->expects(self::exactly(1))
 			->method('dispatch');
 
 		$corsMiddleware = $this->createMock(Middleware\Cors::class);
@@ -83,8 +89,6 @@ final class HttpServerCommandTest extends TestCase
 
 		$commandTester = new CommandTester($command);
 		$commandTester->execute([]);
-
-		$this->assertTrue(true);
 	}
 
 }
