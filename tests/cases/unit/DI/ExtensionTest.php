@@ -19,22 +19,20 @@ final class ExtensionTest extends BaseTestCase
 	 */
 	public function testCompilersServices(): void
 	{
-		$container = $this->createContainer();
+		self::assertNotNull($this->container->getByType(Application\Console::class, false));
+		self::assertNotNull($this->container->getByType(Application\Application::class, false));
 
-		self::assertNotNull($container->getByType(Application\Console::class, false));
-		self::assertNotNull($container->getByType(Application\Application::class, false));
+		self::assertNotNull($this->container->getByType(Commands\HttpServer::class, false));
 
-		self::assertNotNull($container->getByType(Commands\HttpServer::class, false));
+		self::assertNotNull($this->container->getByType(Http\ResponseFactory::class, false));
 
-		self::assertNotNull($container->getByType(Http\ResponseFactory::class, false));
+		self::assertNotNull($this->container->getByType(EventLoop\LoopInterface::class, false));
 
-		self::assertNotNull($container->getByType(EventLoop\LoopInterface::class, false));
+		self::assertNotNull($this->container->getByType(Middleware\Cors::class, false));
+		self::assertNotNull($this->container->getByType(Middleware\StaticFiles::class, false));
+		self::assertNotNull($this->container->getByType(Middleware\Router::class, false));
 
-		self::assertNotNull($container->getByType(Middleware\Cors::class, false));
-		self::assertNotNull($container->getByType(Middleware\StaticFiles::class, false));
-		self::assertNotNull($container->getByType(Middleware\Router::class, false));
-
-		self::assertNotNull($container->getByType(Server\Factory::class, false));
+		self::assertNotNull($this->container->getByType(Server\Factory::class, false));
 	}
 
 }
