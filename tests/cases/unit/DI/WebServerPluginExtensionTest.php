@@ -1,17 +1,17 @@
 <?php declare(strict_types = 1);
 
-namespace Tests\Cases\Unit\DI;
+namespace FastyBird\WebServerPlugin\Tests\Cases\Unit\DI;
 
 use FastyBird\WebServerPlugin\Application;
 use FastyBird\WebServerPlugin\Commands;
 use FastyBird\WebServerPlugin\Http;
 use FastyBird\WebServerPlugin\Middleware;
 use FastyBird\WebServerPlugin\Server;
+use FastyBird\WebServerPlugin\Tests\Cases\Unit\BaseTestCase;
 use Nette;
 use React\EventLoop;
-use Tests\Cases\Unit\BaseTestCase;
 
-final class ExtensionTest extends BaseTestCase
+final class WebServerPluginExtensionTest extends BaseTestCase
 {
 
 	/**

@@ -49,7 +49,7 @@
     "psr/event-dispatcher" : "^1.0",
     "psr/http-message" : "^1.0",
     "psr/log" : "^1.1|^3.0",
-    "react/http" : "^1.5",
+    "react/http" : "^1.7",
     "sunrise/http-server-request" : "^2.0",
     "symfony/console" : "^5.0|^6.0",
     "symfony/event-dispatcher" : "^5.4"
@@ -86,7 +86,7 @@
 
   "autoload-dev" : {
     "psr-4" : {
-      "Tests\\Cases\\Unit\\" : "tests/cases/unit"
+      "FastyBird\\WebServerPlugin\\Tests\\Cases\\Unit\\" : "tests/cases/unit"
     }
   },
 
