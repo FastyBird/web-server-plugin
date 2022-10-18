@@ -13,7 +13,7 @@
  * @date           24.07.21
  */
 
-namespace FastyBird\WebServerPlugin\Exceptions;
+namespace FastyBird\Plugin\WebServer\Exceptions;
 
 use InvalidArgumentException as PHPInvalidArgumentException;
 

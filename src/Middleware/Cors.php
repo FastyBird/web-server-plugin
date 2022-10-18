@@ -13,7 +13,7 @@
  * @date           08.05.21
  */
 
-namespace FastyBird\WebServerPlugin\Middleware;
+namespace FastyBird\Plugin\WebServer\Middleware;
 
 use Closure;
 use InvalidArgumentException;

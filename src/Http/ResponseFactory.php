@@ -13,7 +13,7 @@
  * @date           17.03.20
  */
 
-namespace FastyBird\WebServerPlugin\Http;
+namespace FastyBird\Plugin\WebServer\Http;
 
 use Fig\Http\Message\StatusCodeInterface;
 use IPub\SlimRouter\Http\Stream;

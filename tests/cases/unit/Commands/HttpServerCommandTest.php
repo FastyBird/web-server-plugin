@@ -1,10 +1,10 @@
 <?php declare(strict_types = 1);
 
-namespace FastyBird\WebServerPlugin\Tests\Cases\Unit\Commands;
+namespace FastyBird\Plugin\WebServer\Tests\Cases\Unit\Commands;
 
-use FastyBird\WebServerPlugin\Commands;
-use FastyBird\WebServerPlugin\Middleware;
-use FastyBird\WebServerPlugin\Server;
+use FastyBird\Plugin\WebServer\Commands;
+use FastyBird\Plugin\WebServer\Middleware;
+use FastyBird\Plugin\WebServer\Server;
 use PHPUnit\Framework\TestCase;
 use Psr\EventDispatcher;
 use Psr\Log;

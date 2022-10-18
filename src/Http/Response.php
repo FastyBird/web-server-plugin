@@ -13,9 +13,9 @@
  * @date           17.03.20
  */
 
-namespace FastyBird\WebServerPlugin\Http;
+namespace FastyBird\Plugin\WebServer\Http;
 
-use FastyBird\WebServerPlugin\Exceptions;
+use FastyBird\Plugin\WebServer\Exceptions;
 use IPub\SlimRouter;
 use function array_key_exists;
 use function func_num_args;

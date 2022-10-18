@@ -13,7 +13,7 @@
  * @date           09.10.21
  */
 
-namespace FastyBird\WebServerPlugin\Events;
+namespace FastyBird\Plugin\WebServer\Events;
 
 use Symfony\Contracts\EventDispatcher;
 use Throwable;

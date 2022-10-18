@@ -13,9 +13,9 @@
  * @date           10.06.22
  */
 
-namespace FastyBird\WebServerPlugin\Server;
+namespace FastyBird\Plugin\WebServer\Server;
 
-use FastyBird\WebServerPlugin\Middleware;
+use FastyBird\Plugin\WebServer\Middleware;
 use Psr\Log;
 use React\EventLoop;
 use React\Http;
@@ -27,10 +27,10 @@ use function str_replace;
 /**
  * HTTP server factory
  *
- * @package         FastyBird:WsServerPlugin!
- * @subpackage      Server
+ * @package        FastyBird:WebServerPlugin!
+ * @subpackage     Server
  *
- * @author          Adam Kadlec <adam.kadlec@fastybird.com>
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 final class Factory
 {

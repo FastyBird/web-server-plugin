@@ -1,8 +1,8 @@
 <?php declare(strict_types = 1);
 
-namespace FastyBird\WebServerPlugin\Tests\Cases\Unit;
+namespace FastyBird\Plugin\WebServer\Tests\Cases\Unit;
 
-use FastyBird\WebServerPlugin;
+use FastyBird\Plugin\WebServer;
 use Nette;
 use Nette\DI;
 use PHPUnit\Framework\TestCase;
@@ -41,7 +41,7 @@ abstract class BaseTestCase extends TestCase
 			$config->addConfig($additionalConfig);
 		}
 
-		WebServerPlugin\DI\WebServerPluginExtension::register($config, true);
+		WebServer\DI\WebServerExtension::register($config, true);
 
 		return $config->createContainer();
 	}

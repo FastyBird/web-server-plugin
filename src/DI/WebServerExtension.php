@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * WebServerPluginExtension.php
+ * WebServerExtension.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,14 +13,14 @@
  * @date           21.03.20
  */
 
-namespace FastyBird\WebServerPlugin\DI;
+namespace FastyBird\Plugin\WebServer\DI;
 
-use FastyBird\WebServerPlugin\Application;
-use FastyBird\WebServerPlugin\Commands;
-use FastyBird\WebServerPlugin\Exceptions;
-use FastyBird\WebServerPlugin\Http;
-use FastyBird\WebServerPlugin\Middleware;
-use FastyBird\WebServerPlugin\Server;
+use FastyBird\Plugin\WebServer\Application;
+use FastyBird\Plugin\WebServer\Commands;
+use FastyBird\Plugin\WebServer\Exceptions;
+use FastyBird\Plugin\WebServer\Http;
+use FastyBird\Plugin\WebServer\Middleware;
+use FastyBird\Plugin\WebServer\Server;
 use Fig\Http\Message\RequestMethodInterface;
 use IPub\SlimRouter;
 use Nette;
@@ -39,7 +39,7 @@ use function sprintf;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class WebServerPluginExtension extends DI\CompilerExtension
+class WebServerExtension extends DI\CompilerExtension
 {
 
 	public const NAME = 'fbWebServerPlugin';
@@ -67,7 +67,7 @@ class WebServerPluginExtension extends DI\CompilerExtension
 			$extensionName,
 			$cliMode,
 		): void {
-			$compiler->addExtension($extensionName, new WebServerPluginExtension($cliMode));
+			$compiler->addExtension($extensionName, new WebServerExtension($cliMode));
 		};
 	}
 

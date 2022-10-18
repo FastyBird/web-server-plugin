@@ -13,7 +13,7 @@
  * @date           21.05.21
  */
 
-namespace FastyBird\WebServerPlugin\Application;
+namespace FastyBird\Plugin\WebServer\Application;
 
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input;

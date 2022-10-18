@@ -55,12 +55,12 @@
     },
     "autoload": {
         "psr-4": {
-            "FastyBird\\WebServerPlugin\\": "src/"
+            "FastyBird\\Plugin\\WebServer\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "FastyBird\\WebServerPlugin\\Tests\\Cases\\Unit\\": "tests/cases/unit"
+            "FastyBird\\Plugin\\WebServer\\Tests\\Cases\\Unit\\": "tests/cases/unit"
         }
     },
     "config": {

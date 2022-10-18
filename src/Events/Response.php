@@ -13,7 +13,7 @@
  * @date           05.10.21
  */
 
-namespace FastyBird\WebServerPlugin\Events;
+namespace FastyBird\Plugin\WebServer\Events;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

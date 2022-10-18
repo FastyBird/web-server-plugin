@@ -16,7 +16,7 @@ After that, you have to register plugin in *config.neon*.
 
 ```neon
 extensions:
-    fbWebServerPlugin: FastyBird\WebServerPlugin\DI\WebServerPluginExtension(%consoleMode%)
+    fbWebServerPlugin: FastyBird\Plugin\WebServer\DI\WebServerExtension(%consoleMode%)
 ```
 
 This plugin is dependent on other extensions, and they have to be registered too
@@ -208,7 +208,7 @@ visit: [ipub/slim-router](https://github.com/iPublikuj/slim-router/blob/main/doc
 ## Running server
 
 To be able to start server, you have to create an entrypoint for console. It is a simple script that loads the DI
-container and fires `FastyBird\WebServerPlugin\Application\Console::run`.
+container and fires `FastyBird\Plugin\WebServer\Application\Console::run`.
 
 You can copy & paste it to your project, for example to `<app_root>/bin/console`.
 
@@ -226,7 +226,7 @@ require __DIR__ . '/../vendor/autoload.php';
 
 exit(Your\CoolApp\Bootstrap::boot()
     ->createContainer()
-    ->getByType(FastyBird\WebServerPlugin\Application\Console::class)
+    ->getByType(FastyBird\Plugin\WebServer\Application\Console::class)
     ->run());
 ```
 
@@ -242,7 +242,7 @@ If you have any reason to use classic web server like [Apache](https://www.apach
 , this extension has solution for you.
 
 Steps to achieve this way is almost same as in console version. You have to create an entrypoint which will loads DI and
-fire `FastyBird\WebServerPlugin\Application\Application::run`
+fire `FastyBird\Plugin\WebServer\Application\Application::run`
 
 You can copy & paste it to your project, for example to `<app_root>/www/index.php`.
 
@@ -253,7 +253,7 @@ require __DIR__ . '/../vendor/autoload.php';
 
 exit(Your\CoolApp\Bootstrap::boot()
     ->createContainer()
-    ->getByType(FastyBird\WebServerPlugin\Application\Application::class)
+    ->getByType(FastyBird\Plugin\WebServer\Application\Application::class)
     ->run());
 ```
 

@@ -13,11 +13,11 @@
  * @date           15.03.20
  */
 
-namespace FastyBird\WebServerPlugin\Commands;
+namespace FastyBird\Plugin\WebServer\Commands;
 
-use FastyBird\WebServerPlugin\Events;
-use FastyBird\WebServerPlugin\Exceptions;
-use FastyBird\WebServerPlugin\Server;
+use FastyBird\Plugin\WebServer\Events;
+use FastyBird\Plugin\WebServer\Exceptions;
+use FastyBird\Plugin\WebServer\Server;
 use Nette;
 use Psr\EventDispatcher;
 use Psr\Log;

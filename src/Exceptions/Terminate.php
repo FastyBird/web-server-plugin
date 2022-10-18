@@ -13,7 +13,7 @@
  * @date           05.12.20
  */
 
-namespace FastyBird\WebServerPlugin\Exceptions;
+namespace FastyBird\Plugin\WebServer\Exceptions;
 
 use Exception;
 use Throwable;

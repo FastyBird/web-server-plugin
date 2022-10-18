@@ -13,9 +13,9 @@
  * @date           08.05.21
  */
 
-namespace FastyBird\WebServerPlugin\Middleware;
+namespace FastyBird\Plugin\WebServer\Middleware;
 
-use FastyBird\WebServerPlugin\Events;
+use FastyBird\Plugin\WebServer\Events;
 use IPub\SlimRouter\Routing;
 use Psr\EventDispatcher;
 use Psr\Http\Message\ResponseInterface;

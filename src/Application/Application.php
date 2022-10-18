@@ -13,9 +13,9 @@
  * @date           23.02.21
  */
 
-namespace FastyBird\WebServerPlugin\Application;
+namespace FastyBird\Plugin\WebServer\Application;
 
-use FastyBird\WebServerPlugin\Events;
+use FastyBird\Plugin\WebServer\Events;
 use IPub\SlimRouter\Routing;
 use Nette;
 use Psr\EventDispatcher;

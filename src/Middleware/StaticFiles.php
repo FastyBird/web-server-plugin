@@ -13,11 +13,11 @@
  * @date           08.05.21
  */
 
-namespace FastyBird\WebServerPlugin\Middleware;
+namespace FastyBird\Plugin\WebServer\Middleware;
 
 use Closure;
-use FastyBird\WebServerPlugin\Exceptions;
-use FastyBird\WebServerPlugin\Utils;
+use FastyBird\Plugin\WebServer\Exceptions;
+use FastyBird\Plugin\WebServer\Utils;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

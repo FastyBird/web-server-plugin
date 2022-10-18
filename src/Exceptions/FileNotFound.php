@@ -13,7 +13,7 @@
  * @date           08.05.21
  */
 
-namespace FastyBird\WebServerPlugin\Exceptions;
+namespace FastyBird\Plugin\WebServer\Exceptions;
 
 use RuntimeException;
 

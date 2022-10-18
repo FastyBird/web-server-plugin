@@ -13,7 +13,7 @@
  * @date           28.09.21
  */
 
-namespace FastyBird\WebServerPlugin\Utils;
+namespace FastyBird\Plugin\WebServer\Utils;
 
 /**
  * List of known mime types
